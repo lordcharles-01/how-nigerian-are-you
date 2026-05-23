@@ -637,7 +637,7 @@ function LandingScreen({ onStart, leaderboard }) {
         {/* CTA */}
         <div className="lp3" style={{ marginTop:22 }}>
           <button className="hbtn pls" onClick={onStart}>Start the Quiz →</button>
-          <p style={{ color:"#4b5563", fontSize:12, textAlign:"center", marginTop:7 }}>
+          <p style={{ color:"#d1fae5", fontSize:12, textAlign:"center", marginTop:7 }}>
             No sign-up. No long thing. Pure vibes only.
           </p>
         </div>
@@ -670,10 +670,10 @@ function LandingScreen({ onStart, leaderboard }) {
 
         {/* Social proof */}
         <div className="lp4" style={{ marginTop:16 }}>
-          <p style={{ color:"#374151", fontSize:11, textAlign:"center", marginBottom:8 }}>
+          <p style={{ color:"#86efac", fontSize:11, textAlign:"center", marginBottom:8 }}>
             Spreading across Nigerian timelines right now 🔥
           </p>
-          {[["Chidimma_O","Federal Traveller",32],["Emeka_Benz","Weekend Traveller",13],["Halima_K","Village Champion",4]].map(([n,t,s]) => (
+          {[["Chidimma_O","Inspector General of States",32],["Emeka_Benz","Inter State Operator",13],["Halima_K","Village Champion",4]].map(([n,t,s]) => (
             <div key={n} className="hcard" style={{ padding:"10px 14px", marginBottom:7, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
               <div>
                 <div style={{ color:"#fff", fontWeight:600, fontSize:13 }}>{n}</div>
