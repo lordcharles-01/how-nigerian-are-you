@@ -96,34 +96,57 @@ const MAP_GRID = [
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 function getTitleText(s) {
-  if (s <= 5)  return "Village Champion";
-  if (s <= 10) return "Occasional Wanderer";
-  if (s <= 15) return "Weekend Traveller";
-  if (s <= 20) return "Area Explorer";
-  if (s <= 25) return "Inter-State Veteran";
-  if (s <= 30) return "Federal Traveller";
-  if (s <= 35) return "Inspector General of States";
+  if (s === 0)  return "Stay At Home Boss";
+  if (s <= 3)   return "Village Champion";
+  if (s <= 6)   return "Owambe Commuter";
+  if (s <= 9)   return "Inter State Operator";
+  if (s <= 12)  return "National Road Veteran";
+  if (s <= 15)  return "Country Cruiser Emeritus";
+  if (s <= 18)  return "Area Commander of Travel";
+  if (s <= 21)  return "Minister of Internal Affairs";
+  if (s <= 24)  return "Naija Pathfinder";
+  if (s <= 27)  return "Minister of Tourism";
+  if (s <= 30)  return "Federal Character Ambassador";
+  if (s <= 33)  return "Inspector General of States";
+  if (s <= 35)  return "Grand Commander of the Federation";
+  if (s <= 36)  return "Dangote of Travel";
   return "Mungo Park Reincarnated";
 }
+
 function getTitleEmoji(s) {
-  if (s <= 5)  return "🏘️";
-  if (s <= 10) return "👣";
-  if (s <= 15) return "🚌";
-  if (s <= 20) return "🧭";
-  if (s <= 25) return "🚀";
-  if (s <= 30) return "🛫";
-  if (s <= 35) return "🎩";
+  if (s === 0)  return "🛋️";
+  if (s <= 3)   return "🏘️";
+  if (s <= 6)   return "🤔";
+  if (s <= 9)   return "🚐";
+  if (s <= 12)  return "🎉";
+  if (s <= 15)  return "🌅";
+  if (s <= 18)  return "🎖️";
+  if (s <= 21)  return "👑";
+  if (s <= 24)  return "🍢";
+  if (s <= 27)  return "🧭";
+  if (s <= 30)  return "📋";
+  if (s <= 33)  return "💼";
+  if (s <= 35)  return "🎩";
+  if (s <= 36)  return "💰";
   return "🏆";
 }
+
 function getSummary(s) {
-  if (s <= 5)  return "You and your local government are deeply in love. Nothing wrong with that.";
-  if (s <= 10) return "Your travel history fits comfortably on a Post-it note. Time to upgrade.";
-  if (s <= 15) return "You've scratched the surface. Nigeria has 37 stories — you've read some.";
-  if (s <= 20) return "You know enough states to give directions, but not enough to sound like LASTMA.";
-  if (s <= 25) return "You've seen enough of Nigeria to start giving transport advice unprovoked.";
-  if (s <= 30) return "You and interstate buses are clearly in a committed relationship.";
-  if (s <= 35) return "At this point, you deserve diplomatic immunity. FRSC should know your face.";
-  return "You have visited every corner of this great nation. Please submit your CV to the Ministry of Tourism.";
+  if (s === 0)  return "Zero states. Not even your state of origin. We need to talk.";
+  if (s <= 3)   return "At this point, even Google Maps is asking questions. When will you travel?";
+  if (s <= 6)   return "Your travel experience begins and ends with your area and one cousin's wedding.";
+  if (s <= 9)   return "You've scratched the surface. Nigeria has 37 stories — you've read some.";
+  if (s <= 12)  return "You and interstate buses are clearly in a committed relationship.";
+  if (s <= 15)  return "FRSC officers look at you with the familiarity reserved for regular customers.";
+  if (s <= 18)  return "You've seen enough motor parks to write a PhD thesis on danfo culture.";
+  if (s <= 21)  return "You've entered enough states to start saying things like 'traffic there is different.'";
+  if (s <= 24)  return "Motor parks, roadside suya and random checkpoints are now part of your life story.";
+  if (s <= 27)  return "You've covered serious ground. FRSC officers recognise your face on sight.";
+  if (s <= 30)  return "Federal character? You embody it. Every geopolitical zone has a story about you.";
+  if (s <= 33)  return "At this stage, you no longer travel. You embark on national assignments.";
+  if (s <= 35)  return "At this point you are no longer a traveler. You are a national monument.";
+  if (s <= 36)  return "One state short of perfection. Nigeria owes you a pension.";
+  return "All 37. You can now conduct NYSC orientation for the entire country.";
 }
 
 function shuffle(arr) {
@@ -161,25 +184,41 @@ function buildResultObject(answers, nickname) {
   };
 }
 
-// ─── STORAGE ──────────────────────────────────────────────────────────────────
-function lsGet(key, fallback = null) {
-  try { const v = localStorage.getItem(key); return v != null ? JSON.parse(v) : fallback; }
-  catch { return fallback; }
-}
-function lsSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
-function lsDel(key)      { try { localStorage.removeItem(key); } catch {} }
+// ─── SUPABASE LEADERBOARD ─────────────────────────────────────────────────────
+const SUPA_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SUPA_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-// SUPABASE_SWAP: replace these two functions with Supabase reads/writes
-function lb_read()       { return lsGet("hna_lb", []); }
-function lb_write(entry) {
-  const rows = lb_read();
-  // dedupe same nickname+score within 60 s
-  const isDupe = rows.some(r => r.nickname === entry.nickname && r.score === entry.score && Date.now() - r.ts < 60000);
-  if (!isDupe) {
-    rows.push({ ...entry, id: String(Date.now()) });
-    rows.sort((a, b) => b.score - a.score || b.ts - a.ts);
-    lsSet("hna_lb", rows.slice(0, 100));
+async function lb_read() {
+  try {
+    const res = await fetch(
+      `${SUPA_URL}/rest/v1/scores?select=id,nickname,score,ts&order=score.desc,ts.desc&limit=20`,
+      { headers: { apikey: SUPA_KEY, Authorization: `Bearer ${SUPA_KEY}` } }
+    );
+    if (!res.ok) return lsGet("hna_lb", []);
+    return await res.json();
+  } catch {
+    return lsGet("hna_lb", []);
   }
+}
+
+async function lb_write(entry) {
+  try {
+    await fetch(`${SUPA_URL}/rest/v1/scores`, {
+      method: "POST",
+      headers: {
+        apikey: SUPA_KEY,
+        Authorization: `Bearer ${SUPA_KEY}`,
+        "Content-Type": "application/json",
+        Prefer: "return=minimal",
+      },
+      body: JSON.stringify(entry),
+    });
+  } catch {}
+  // Always also write locally as fallback
+  const rows = lsGet("hna_lb", []);
+  rows.push({ ...entry, id: String(Date.now()) });
+  rows.sort((a, b) => b.score - a.score || b.ts - a.ts);
+  lsSet("hna_lb", rows.slice(0, 100));
 }
 
 // ─── URL ──────────────────────────────────────────────────────────────────────
@@ -426,7 +465,7 @@ export default function App() {
   // Refresh leaderboard whenever we land on those screens
   useEffect(() => {
     if (screen === "landing" || screen === "leaderboard")
-      setLeaderboard(lb_read().slice(0, 20));
+      lb_read().then(rows => setLeaderboard((rows || []).slice(0, 20)));
   }, [screen]);
 
   // ── Game flow ──────────────────────────────────────────────────────────────
