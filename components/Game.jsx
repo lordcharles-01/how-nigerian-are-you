@@ -202,16 +202,21 @@ async function lb_read() {
       `${SUPA_URL}/rest/v1/scores?select=id,nickname,score,ts&order=score.desc,ts.desc&limit=20`,
       { headers: { apikey: SUPA_KEY, Authorization: `Bearer ${SUPA_KEY}` } }
     );
-    if (!res.ok) return lsGet("hna_lb", []);
-    return await res.json();
-  } catch {
+    if (!res.ok) {
+      console.error("Supabase lb_read failed:", res.status, await res.text());
+      return lsGet("hna_lb", []);
+    }
+    const data = await res.json();
+    console.log("Supabase lb_read success:", data.length, "rows");
+    return data;
+  } catch(e) {
+    console.error("Supabase lb_read exception:", e.message);
     return lsGet("hna_lb", []);
   }
-}
 
 async function lb_write(entry) {
   try {
-    await fetch(`${SUPA_URL}/rest/v1/scores`, {
+    const res = await fetch(`${SUPA_URL}/rest/v1/scores`, {
       method: "POST",
       headers: {
         apikey: SUPA_KEY,
@@ -221,8 +226,14 @@ async function lb_write(entry) {
       },
       body: JSON.stringify(entry),
     });
-  } catch {}
-  // Always also write locally as fallback
+    if (!res.ok) {
+      console.error("Supabase lb_write failed:", res.status, await res.text());
+    } else {
+      console.log("Supabase lb_write success");
+    }
+  } catch(e) {
+    console.error("Supabase lb_write exception:", e.message);
+  }
   const rows = lsGet("hna_lb", []);
   rows.push({ ...entry, id: String(Date.now()) });
   rows.sort((a, b) => b.score - a.score || b.ts - a.ts);
