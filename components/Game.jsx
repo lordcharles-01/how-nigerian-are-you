@@ -184,6 +184,14 @@ function buildResultObject(answers, nickname) {
   };
 }
 
+// ─── STORAGE ──────────────────────────────────────────────────────────────────
+function lsGet(key, fallback = null) {
+  try { const v = localStorage.getItem(key); return v != null ? JSON.parse(v) : fallback; }
+  catch { return fallback; }
+}
+function lsSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
+function lsDel(key)      { try { localStorage.removeItem(key); } catch {} }
+
 // ─── SUPABASE LEADERBOARD ─────────────────────────────────────────────────────
 const SUPA_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPA_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
