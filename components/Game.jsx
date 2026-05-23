@@ -782,7 +782,7 @@ function GameScreen({ stateName, currentIdx, total, animating, onAnswer }) {
         {/* Progress */}
         <div style={{ marginBottom:28 }}>
           <div style={{ display:"flex", justifyContent:"space-between", marginBottom:7 }}>
-            <span style={{ color:"#6b7280", fontSize:13 }}>{currentIdx} / {total} answered</span>
+            <span style={{ color:"#d1fae5", fontSize:13 }}>{currentIdx} / {total} answered</span>
             <span style={{ color:"#4ade80", fontSize:13, fontWeight:700 }}>{pct}%</span>
           </div>
           <div style={{ height:7, background:"#1e293b", borderRadius:9 }}>
@@ -807,13 +807,13 @@ function GameScreen({ stateName, currentIdx, total, animating, onAnswer }) {
           }}
         >
           <div style={{ fontSize:44, marginBottom:12 }}>📍</div>
-          <p style={{ color:"#6b7280", fontSize:13, fontWeight:600, letterSpacing:".08em", marginBottom:8 }}>
+          <p style={{ color:"#86efac", fontSize:13, fontWeight:600, letterSpacing:".08em", marginBottom:8 }}>
             HAVE YOU EVER VISITED
           </p>
           <h2 style={{ color:"#fff", fontSize:28, fontWeight:800, lineHeight:1.15 }}>
             {displayName}?
           </h2>
-          <p style={{ color:"#374151", fontSize:12, marginTop:10 }}>
+          <p style={{ color:"#86efac", fontSize:12, marginTop:10 }}>
             Physically. In person. For real. 👀
           </p>
         </div>
@@ -823,7 +823,7 @@ function GameScreen({ stateName, currentIdx, total, animating, onAnswer }) {
           <button className="yb" onClick={() => onAnswer(true)}  disabled={animating}>✅ Yes</button>
           <button className="nb" onClick={() => onAnswer(false)} disabled={animating}>❌ No</button>
         </div>
-        <p style={{ color:"#1c2b1c", fontSize:12, textAlign:"center", marginTop:14 }}>
+        <p style={{ color:"#6ee7b7", fontSize:12, textAlign:"center", marginTop:14 }}>
           No overthinking — gut feel only
         </p>
       </div>
@@ -1013,8 +1013,8 @@ function LeaderboardScreen({ leaderboard, myNickname, onBack }) {
             ← Back
           </button>
           <h2 style={{ color:"#fff", fontSize:26, fontWeight:800 }}>🏆 Leaderboard</h2>
-          <p style={{ color:"#6b7280", fontSize:13, marginTop:4 }}>
-            Top travellers on this device
+<p style={{ color:"#86efac", fontSize:13, marginTop:4 }}>
+  Global — powered by Supabase
           </p>
         </div>
 
@@ -1060,10 +1060,6 @@ function LeaderboardScreen({ leaderboard, myNickname, onBack }) {
           })
         )}
 
-        <p style={{ color:"#374151", fontSize:11, textAlign:"center", marginTop:20, lineHeight:1.5 }}>
-          Leaderboard is stored on this device.<br/>
-          Connect a database to make it global.
-        </p>
       </div>
     </div>
   );
