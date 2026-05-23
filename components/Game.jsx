@@ -197,6 +197,7 @@ const SUPA_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPA_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 async function lb_read() {
+  if (!SUPA_URL || !SUPA_KEY) return lsGet("hna_lb", []);
   try {
     const res = await fetch(
       `${SUPA_URL}/rest/v1/scores?select=id,nickname,score,ts&order=score.desc,ts.desc&limit=20`,
@@ -210,19 +211,20 @@ async function lb_read() {
 }
 
 async function lb_write(entry) {
-  try {
-    await fetch(`${SUPA_URL}/rest/v1/scores`, {
-      method: "POST",
-      headers: {
-        apikey: SUPA_KEY,
-        Authorization: `Bearer ${SUPA_KEY}`,
-        "Content-Type": "application/json",
-        Prefer: "return=minimal",
-      },
-      body: JSON.stringify(entry),
-    });
-  } catch {}
-  // Always also write locally as fallback
+  if (SUPA_URL && SUPA_KEY) {
+    try {
+      await fetch(`${SUPA_URL}/rest/v1/scores`, {
+        method: "POST",
+        headers: {
+          apikey: SUPA_KEY,
+          Authorization: `Bearer ${SUPA_KEY}`,
+          "Content-Type": "application/json",
+          Prefer: "return=minimal",
+        },
+        body: JSON.stringify(entry),
+      });
+    } catch {}
+  }
   const rows = lsGet("hna_lb", []);
   rows.push({ ...entry, id: String(Date.now()) });
   rows.sort((a, b) => b.score - a.score || b.ts - a.ts);
