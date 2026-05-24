@@ -297,7 +297,7 @@ function NigeriaGridMap({ visited = [] }) {
   return (
     <div style={{ width:"100%", overflowX:"auto" }}>
       <svg
-        viewBox={`0 0 ${W} ${H}`}
+        viewBox={"0 0 "+W+" "+H}
         style={{ width:"100%", maxWidth:W, height:"auto", display:"block", margin:"0 auto" }}
         aria-label="Nigeria state grid map"
       >
@@ -360,7 +360,7 @@ function NigeriaGridMap({ visited = [] }) {
               <div style={{
                 width:10, height:10, borderRadius:2,
                 background: vCount > 0 ? col.visited : col.base,
-                border:`1px solid ${col.label}`, flexShrink:0,
+                border:"1px solid "+col.label, flexShrink:0,
               }}/>
               <span style={{ color:"#9ca3af", fontSize:9, lineHeight:1.2 }}>
                 {z} ({vCount}/{total})
@@ -397,10 +397,10 @@ function Confetti({ active }) {
       `}</style>
       {pts.current.map(p => (
         <div key={p.id} style={{
-          position:"absolute", left:`${p.x}%`, top:0,
+          position:"absolute", left:p.x+"%", top:0,
           width:p.size, height:p.rect ? p.size * 0.45 : p.size,
           backgroundColor:p.color, borderRadius:p.rect ? 2 : "50%",
-          animation:`cffall ${p.dur}s ${p.delay}s ease-in forwards`,
+          animation:"cffall "+p.dur+"s "+p.delay+"s ease-in forwards",
         }}/>
       ))}
     </div>
@@ -709,7 +709,7 @@ function LandingScreen({ onStart, leaderboard }) {
                 <div style={{ display:"flex", alignItems:"center", gap:6 }}>
                   <span style={{ color:"#4ade80", fontWeight:700, fontSize:14 }}>{e.score}/37</span>
                   <div style={{ width:34, height:4, background:"#1f2937", borderRadius:9 }}>
-                    <div style={{ width:`${(e.score/37)*100}%`, height:"100%", background:"#16a34a", borderRadius:9 }}/>
+                    <div style={{ width:((e.score/37)*100)+"%", height:"100%", background:"#16a34a", borderRadius:9 }}/>
                   </div>
                 </div>
               </div>
@@ -855,7 +855,7 @@ function GameScreen({ stateName, currentIdx, total, animating, onAnswer, onBack 
             </div>
             <div style={{ height:7, background:"#1e293b", borderRadius:9 }}>
               <div style={{
-                width:`${pct}%`, height:"100%",
+                width:pct+"%", height:"100%",
                 background:"linear-gradient(90deg,#166534,#4ade80)",
                 borderRadius:9, transition:"width .3s ease",
               }}/>
@@ -1037,7 +1037,7 @@ function GameScreen({ stateName, currentIdx, total, animating, onAnswer }) {
           </div>
           <div style={{ height:7, background:"#1e293b", borderRadius:9 }}>
             <div style={{
-              width:`${pct}%`, height:"100%",
+              width:pct+"%", height:"100%",
               background:"linear-gradient(90deg,#166534,#4ade80)",
               borderRadius:9, transition:"width .3s ease",
             }}/>
@@ -1158,7 +1158,7 @@ function ResultScreen({ data, onPlayAgain, onLeaderboard, onShare }) {
                 </div>
                 <div style={{ height:5, background:"#1e293b", borderRadius:9 }}>
                   <div style={{
-                    width:`${(z.visited/z.total)*100}%`, height:"100%",
+                    width:((z.visited/z.total)*100)+"%", height:"100%",
                     background:z.visited===z.total ? col.visited : "#334155",
                     borderRadius:9, transition:"width .8s ease",
                   }}/>
@@ -1282,7 +1282,7 @@ function LeaderboardScreen({ leaderboard, myNickname, onBack }) {
                 key={e.id}
                 style={{
                   background: isMe ? "rgba(22,163,74,.11)" : "rgba(255,255,255,.04)",
-                  border: `1px solid ${isMe ? "rgba(74,222,128,.35)" : "rgba(255,255,255,.07)"}`,
+                  border: "1px solid "+(isMe ? "rgba(74,222,128,.35)" : "rgba(255,255,255,.07)"),
                   borderRadius:14, padding:"12px 16px", marginBottom:8,
                   display:"flex", alignItems:"center", gap:12,
                 }}
@@ -1298,7 +1298,7 @@ function LeaderboardScreen({ leaderboard, myNickname, onBack }) {
                     )}
                   </div>
                   <div style={{ height:4, background:"#1e293b", borderRadius:9 }}>
-                    <div style={{ width:`${(e.score/37)*100}%`, height:"100%", background:"#16a34a", borderRadius:9 }}/>
+                    <div style={{ width:((e.score/37)*100)+"%", height:"100%", background:"#16a34a", borderRadius:9 }}/>
                   </div>
                 </div>
                 <div style={{ textAlign:"right" }}>
