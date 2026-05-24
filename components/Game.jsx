@@ -702,7 +702,7 @@ function LandingScreen({ onStart, leaderboard }) {
               <div key={e.id} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"7px 0", borderBottom:i<4?"1px solid rgba(255,255,255,.05)":"none" }}>
                 <div style={{ display:"flex", alignItems:"center", gap:8 }}>
                   <span style={{ fontSize:14, color:i===0?"#fbbf24":"#6b7280" }}>
-                    {i===0?"👑":i===1?"🥈":i===2?"🥉":`#${i+1}`}
+                    {i===0?"👑":i===1?"🥈":i===2?"🥉":"#"+(i+1)}
                   </span>
                   <span style={{ color:"#e5e7eb", fontSize:14, fontWeight:600 }}>{e.nickname}</span>
                 </div>
@@ -1276,7 +1276,7 @@ function LeaderboardScreen({ leaderboard, myNickname, onBack }) {
         ) : (
           leaderboard.map((e, i) => {
             const isMe  = e.nickname === myNickname;
-            const medal = i===0?"👑": i===1?"🥈": i===2?"🥉": `#${i+1}`;
+            const medal = i===0?"👑": i===1?"🥈": i===2?"🥉": "#"+(i+1);
             return (
               <div
                 key={e.id}
