@@ -69,6 +69,47 @@ const STATES = [
   { name:"Zamfara",     zone:"North West",    abbr:"ZA" },
 ];
 
+
+const STATE_FACTS = {
+  "Abia":        { fact: "Aba, in Abia State, is Nigeria's manufacturing capital. The shoes, bags and clothes made here are exported across West Africa and beyond.", icon: "👟" },
+  "Adamawa":     { fact: "The Mandara Mountains in Adamawa reach over 1,400 metres and are home to some of the most dramatic landscapes in all of Nigeria.", icon: "⛰️" },
+  "Akwa Ibom":   { fact: "Akwa Ibom produces more crude oil than any other state in Nigeria and has one of the highest internally generated revenues in the country.", icon: "🛢️" },
+  "Anambra":     { fact: "Onitsha in Anambra is home to one of the largest markets in Africa. Traders come from as far as Senegal and South Africa to buy here.", icon: "🛒" },
+  "Bauchi":      { fact: "Yankari Game Reserve in Bauchi is Nigeria's largest and most visited wildlife park, famous for its warm-water springs and elephant herds.", icon: "🐘" },
+  "Bayelsa":     { fact: "Nigeria's smallest state by land area and home to just 8 local governments — yet it has produced a Nigerian President.", icon: "🏛️" },
+  "Benue":       { fact: "Named after the mighty Benue River — the longest tributary of the River Niger — Benue is known as the Food Basket of the Nation thanks to its vast fertile farmland.", icon: "🌾" },
+  "Borno":       { fact: "Maiduguri, the capital of Borno, sits at the edge of the Sahara and was once the commercial hub of an ancient trans-Saharan trade route.", icon: "🏜️" },
+  "Cross River": { fact: "Cross River hosts the famous Calabar Carnival — often called Africa's biggest street party.", icon: "🎉" },
+  "Delta":       { fact: "Delta State is home to the Niger Delta, one of the world's most biodiverse wetland ecosystems, and contains a significant portion of Nigeria's oil reserves.", icon: "🌿" },
+  "Ebonyi":      { fact: "Ebonyi is one of the leading rice-producing states in South-East Nigeria, and home to the ancient salt springs of Uburu and Okposi.", icon: "🍚" },
+  "Edo":         { fact: "The ancient Benin Kingdom in Edo State produced bronze artworks over 600 years ago that are now displayed in the British Museum in London.", icon: "🏺" },
+  "Ekiti":       { fact: "Ekiti has more professors per square kilometre than almost any other state in Nigeria — it is nicknamed the Fountain of Knowledge.", icon: "🎓" },
+  "Enugu":       { fact: "Enugu's coal mines, discovered in 1909, were the first commercially exploited coal deposits in Nigeria and powered the country's early railway system for decades.", icon: "⚫" },
+  "FCT Abuja":   { fact: "Abuja was purpose-built as Nigeria's capital, replacing Lagos in 1991. Aso Rock — a 400-metre granite monolith — towers directly behind the Presidential Villa.", icon: "🪨" },
+  "Gombe":       { fact: "The Tangale-Waja uplands in Gombe contain some of the most fertile farmland in North-East Nigeria and are famous for groundnut and cotton production.", icon: "🌻" },
+  "Imo":         { fact: "Imo State contains Oguta Lake, one of the largest natural lakes in Nigeria, where two rivers meet but remarkably, their waters do not mix.", icon: "💧" },
+  "Jigawa":      { fact: "Jigawa shares over 150km of international border with Niger Republic and is one of Nigeria's most important gateways for trans-Saharan trade.", icon: "🗺️" },
+  "Kaduna":      { fact: "Kaduna is home to the Nigerian Defence Academy, the country's premier military university, which has trained virtually every generation of Nigeria's military leadership since independence.", icon: "🎖️" },
+  "Kano":        { fact: "Kano's dye pits in the old city have been in continuous operation for over 500 years — they are among the oldest active dye pits in the world.", icon: "🎨" },
+  "Katsina":     { fact: "The Gobarau Minaret in Katsina, built in the 15th century, is one of the oldest standing structures in Nigeria and served as both a place of worship and a lighthouse for Saharan traders.", icon: "🕌" },
+  "Kebbi":       { fact: "Kebbi hosts the Argungu Fishing Festival, a UNESCO cultural heritage event, where thousands of fishermen enter the Matan Fada River simultaneously.", icon: "🎣" },
+  "Kogi":        { fact: "Home to the confluence of Rivers Niger and Benue, Kogi is the only state that borders 10 other states. Its capital Lokoja was the first administrative capital of colonial Nigeria.", icon: "🌊" },
+  "Kwara":       { fact: "The Owu Waterfalls in Kwara State are the highest waterfalls in West Africa, dropping over 120 metres through a dramatic forested gorge.", icon: "💦" },
+  "Lagos":       { fact: "Lagos is sub-Saharan Africa's most populous city and economic engine, generating roughly 25% of Nigeria's entire GDP within just 1,171 square kilometres.", icon: "🌆" },
+  "Nasarawa":    { fact: "The Farin Ruwa Waterfall in Nasarawa is one of the tallest waterfalls in Nigeria, plunging over 150 metres in a series of cascades through dense forest.", icon: "🌊" },
+  "Niger":       { fact: "Nigeria's largest state by land area, covering over 76,000 square km — larger than countries like Sierra Leone and Togo — and home to the Kainji Dam.", icon: "⚡" },
+  "Ogun":        { fact: "Ogun State is the birthplace of Wole Soyinka, Africa's first Nobel Laureate in Literature, who was born in Abeokuta in 1934.", icon: "✍️" },
+  "Ondo":        { fact: "Home to the dramatic Idanre Hills — a 3,000-foot ancient rock formation with over 660 steps to the summit — and one of West Africa's largest bitumen deposits.", icon: "⛰️" },
+  "Osun":        { fact: "Home to the Osun-Osogbo Sacred Grove, a UNESCO World Heritage Site, and Ile-Ife, regarded in Yoruba tradition as the cradle of creation.", icon: "🌳" },
+  "Oyo":         { fact: "The Old Oyo Empire, based in what is now Oyo State, was once the most powerful kingdom in West Africa, controlling trade routes from the coast to the Sahara.", icon: "👑" },
+  "Plateau":     { fact: "Jos in Plateau State sits at 1,200 metres above sea level. It is the coldest city in Nigeria and the one place where you genuinely need a sweater in December.", icon: "🧥" },
+  "Rivers":      { fact: "Home to Port Harcourt, Nigeria's oil and gas capital, and Bonny Island, which hosts one of the world's largest liquefied natural gas export terminals.", icon: "⚓" },
+  "Sokoto":      { fact: "Seat of the Sultan of Sokoto, the spiritual leader of Nigerian Muslims, and capital of the historic Sokoto Caliphate — once one of Africa's largest empires.", icon: "☪️" },
+  "Taraba":      { fact: "Taraba contains parts of Gashaka Gumti National Park, the largest national park in Nigeria, covering over 6,700 square kilometres of rainforest and savannah.", icon: "🦁" },
+  "Yobe":        { fact: "The Hadejia River supports one of northern Nigeria's most important inland fishing and farming economies, sustaining hundreds of thousands of livelihoods.", icon: "🎣" },
+  "Zamfara":     { fact: "Home to the Kuyambana Forest Reserve, one of north-west Nigeria's major savannah woodland ecosystems and a historic refuge for wildlife.", icon: "🌲" },
+};
+
 const ZONES = ["North West","North East","North Central","South West","South East","South South"];
 
 // Zone colours used on the grid map
@@ -112,7 +153,6 @@ function getTitleText(s) {
   if (s <= 36)  return "Dangote of Travel";
   return "Mungo Park Reincarnated";
 }
-
 function getTitleEmoji(s) {
   if (s === 0)  return "🛋️";
   if (s <= 3)   return "🏘️";
@@ -130,7 +170,6 @@ function getTitleEmoji(s) {
   if (s <= 36)  return "💰";
   return "🏆";
 }
-
 function getSummary(s) {
   if (s === 0)  return "Zero states. Not even your state of origin. We need to talk.";
   if (s <= 3)   return "At this point, even Google Maps is asking questions. When will you travel?";
@@ -523,6 +562,18 @@ export default function App() {
     }, 270);
   }
 
+
+  function handleBack() {
+    if (currentIdx <= 0 || animating) return;
+    const prev = currentIdx - 1;
+    const stateName = stateOrder[prev];
+    const newAnswers = { ...answers };
+    delete newAnswers[stateName];
+    setAnswers(newAnswers);
+    setCurrentIdx(prev);
+    lsSet(LS_SESSION, { nickname, stateOrder, currentIdx: prev, answers: newAnswers });
+  }
+
   function handlePlayAgain() {
     lsDel(LS_RESULT);
     setResult(null);
@@ -576,6 +627,7 @@ export default function App() {
           total={stateOrder.length}
           animating={animating}
           onAnswer={handleAnswer}
+          onBack={handleBack}
         />
       )}
       {screen === "result" && result && (
@@ -603,76 +655,128 @@ function LandingScreen({ onStart, leaderboard }) {
     <div style={{ minHeight:"100vh", background:BG, fontFamily:FF, overflowX:"hidden" }}>
       <style>{GCSS + `
         .lp1 { animation: hFadeUp .7s ease both; }
-        .lp2 { animation: hFadeUp .7s .1s ease both; }
-        .lp3 { animation: hFadeUp .7s .2s ease both; }
-        .lp4 { animation: hFadeUp .7s .3s ease both; }
-        .flt { animation: hFloat 3s ease-in-out infinite; display: inline-block; }
-        .pls { animation: hPulse 2.2s ease-in-out infinite; }
+        .lp2 { animation: hFadeUp .7s .// ─── GAME ─────────────────────────────────────────────────────────────────────
+function GameScreen({ stateName, currentIdx, total, animating, onAnswer, onBack }) {
+  const pct         = Math.round((currentIdx / total) * 100);
+  const displayName = stateName === "FCT Abuja" ? "FCT Abuja" : `${stateName} State`;
+  const factData    = STATE_FACTS[stateName] || { fact: "", icon: "📍" };
+  const canGoBack   = currentIdx > 0;
+
+  return (
+    <div style={{ minHeight:"100vh", background:"linear-gradient(155deg,#020c04,#0b1a0c)", fontFamily:FF, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"20px 18px" }}>
+      <style>{GCSS + `
+        .yb {
+          background: rgba(22,163,74,.15); border: 2px solid #16a34a; color: #4ade80;
+          font-family: 'Sora','Segoe UI',sans-serif; font-size: 18px; font-weight: 700;
+          padding: 18px; border-radius: 16px; cursor: pointer; width: 100%;
+          transition: all .15s;
+        }
+        .yb:hover  { background: rgba(22,163,74,.3); }
+        .yb:active { transform: scale(.97); }
+        .nb {
+          background: rgba(220,38,38,.12); border: 2px solid #dc2626; color: #fca5a5;
+          font-family: 'Sora','Segoe UI',sans-serif; font-size: 18px; font-weight: 700;
+          padding: 18px; border-radius: 16px; cursor: pointer; width: 100%;
+          transition: all .15s;
+        }
+        .nb:hover  { background: rgba(220,38,38,.25); }
+        .nb:active { transform: scale(.97); }
+        .qcard { animation: hSlideIn .25s ease both; }
+        .back-btn {
+          background: none; border: 1px solid rgba(255,255,255,.2);
+          color: #86efac; font-family: 'Sora','Segoe UI',sans-serif;
+          font-size: 13px; font-weight: 600;
+          padding: 7px 14px; border-radius: 8px; cursor: pointer;
+          transition: all .15s; display: flex; align-items: center; gap: 5px;
+        }
+        .back-btn:hover { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.35); }
+        .back-btn:disabled { opacity: 0.25; pointer-events: none; }
       `}</style>
 
-      <div style={{ maxWidth:430, margin:"0 auto", padding:"0 18px 52px" }}>
+      <div style={{ maxWidth:420, width:"100%" }}>
 
-        {/* Hero */}
-        <div className="lp1" style={{ paddingTop:52, textAlign:"center" }}>
-          <span className="htag">🇳🇬 The Original Nigerian Travel Test</span>
-          <div className="flt" style={{ marginTop:22, fontSize:64 }}>🗺️</div>
-          <h1 style={{ color:"#fff", fontSize:34, fontWeight:800, lineHeight:1.1, letterSpacing:"-0.02em", marginTop:10 }}>
-            How Nigerian<br/>Are You?
-          </h1>
-          <p style={{ color:"#86efac", marginTop:12, fontSize:15, lineHeight:1.65 }}>
-            How many states have you actually{" "}
-            <strong style={{ color:"#4ade80" }}>stepped foot in?</strong><br/>
-            No lies. No audio travelling. 👀
-          </p>
-        </div>
-
-        {/* Stats */}
-        <div className="lp2" style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8, marginTop:26 }}>
-          {[["37","States"],["6","Zones"],["2min","To play"]].map(([n,l]) => (
-            <div key={n} className="hcard" style={{ padding:"12px 6px", textAlign:"center" }}>
-              <div style={{ color:"#4ade80", fontSize:22, fontWeight:800 }}>{n}</div>
-              <div style={{ color:"#86efac", fontSize:11, marginTop:2 }}>{l}</div>
+        {/* Top bar: back button + progress */}
+        <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:20 }}>
+          <button
+            className="back-btn"
+            onClick={onBack}
+            disabled={!canGoBack || animating}
+          >
+            ← Back
+          </button>
+          <div style={{ flex:1 }}>
+            <div style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}>
+              <span style={{ color:"#d1fae5", fontSize:13, fontWeight:600 }}>{currentIdx} / {total} answered</span>
+              <span style={{ color:"#4ade80", fontSize:13, fontWeight:700 }}>{pct}%</span>
             </div>
-          ))}
-        </div>
-
-        {/* CTA */}
-        <div className="lp3" style={{ marginTop:22 }}>
-          <button className="hbtn pls" onClick={onStart}>Start the Quiz →</button>
-          <p style={{ color:"#d1fae5", fontSize:12, textAlign:"center", marginTop:7 }}>
-            No sign-up. No long thing. Pure vibes only.
-          </p>
-        </div>
-
-        {/* Leaderboard preview */}
-        {leaderboard.length > 0 && (
-          <div className="lp4 hcard" style={{ marginTop:26, padding:16 }}>
-            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
-              <span style={{ color:"#fff", fontWeight:700, fontSize:14 }}>🏆 Top Travellers</span>
-              <span className="htag" style={{ fontSize:10 }}>THIS DEVICE</span>
+            <div style={{ height:7, background:"#1e293b", borderRadius:9 }}>
+              <div style={{
+                width:`${pct}%`, height:"100%",
+                background:"linear-gradient(90deg,#166534,#4ade80)",
+                borderRadius:9, transition:"width .3s ease",
+              }}/>
             </div>
-            {leaderboard.slice(0,5).map((e,i) => (
-              <div key={e.id} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"7px 0", borderBottom:i<4?"1px solid rgba(255,255,255,.05)":"none" }}>
-                <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                  <span style={{ fontSize:14, color:i===0?"#fbbf24":"#6b7280" }}>
-                    {i===0?"👑":i===1?"🥈":i===2?"🥉":`#${i+1}`}
-                  </span>
-                  <span style={{ color:"#e5e7eb", fontSize:14, fontWeight:600 }}>{e.nickname}</span>
-                </div>
-                <div style={{ display:"flex", alignItems:"center", gap:6 }}>
-                  <span style={{ color:"#4ade80", fontWeight:700, fontSize:14 }}>{e.score}/37</span>
-                  <div style={{ width:34, height:4, background:"#1f2937", borderRadius:9 }}>
-                    <div style={{ width:`${(e.score/37)*100}%`, height:"100%", background:"#16a34a", borderRadius:9 }}/>
-                  </div>
-                </div>
-              </div>
-            ))}
           </div>
-        )}
+        </div>
 
-        {/* Social proof */}
+        {/* Question card */}
+        <div
+          className={animating ? "" : "qcard"}
+          style={{
+            background:"rgba(255,255,255,.05)",
+            border:"1px solid rgba(255,255,255,.1)",
+            borderRadius:24, padding:"28px 22px",
+            textAlign:"center", marginBottom:14,
+            opacity: animating ? 0 : 1,
+            transition:"opacity .2s",
+          }}
+        >
+          <p style={{ color:"#86efac", fontSize:12, fontWeight:700, letterSpacing:".1em", marginBottom:10 }}>
+            HAVE YOU EVER VISITED
+          </p>
+          <h2 style={{ color:"#ffffff", fontSize:30, fontWeight:800, lineHeight:1.1, marginBottom:6 }}>
+            {displayName}?
+          </h2>
+          <p style={{ color:"#6ee7b7", fontSize:12, marginBottom:20 }}>
+            Physically. In person. For real. 👀
+          </p>
+
+          {/* Fact card */}
+          <div style={{
+            background:"rgba(74,222,128,.08)",
+            border:"1px solid rgba(74,222,128,.2)",
+            borderRadius:14, padding:"14px 16px",
+            textAlign:"left",
+          }}>
+            <div style={{ display:"flex", alignItems:"flex-start", gap:10 }}>
+              <span style={{ fontSize:22, lineHeight:1, flexShrink:0, marginTop:2 }}>{factData.icon}</span>
+              <div>
+                <p style={{ color:"#fbbf24", fontSize:10, fontWeight:700, letterSpacing:".1em", marginBottom:5 }}>
+                  DID YOU KNOW?
+                </p>
+                <p style={{ color:"#e2f5ea", fontSize:13, lineHeight:1.6, fontWeight:400 }}>
+                  {factData.fact}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Answer buttons */}
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+          <button className="yb" onClick={() => onAnswer(true)}  disabled={animating}>✅ Yes</button>
+          <button className="nb" onClick={() => onAnswer(false)} disabled={animating}>❌ No</button>
+        </div>
+        <p style={{ color:"#6ee7b7", fontSize:12, textAlign:"center", marginTop:12 }}>
+          No overthinking — gut feel only
+        </p>
+
+      </div>
+    </div>
+  );
+}ocial proof */}
         <div className="lp4" style={{ marginTop:16 }}>
-          <p style={{ color:"#86efac", fontSize:11, textAlign:"center", marginBottom:8 }}>
+          <p style={{ color:"#374151", fontSize:11, textAlign:"center", marginBottom:8 }}>
             Spreading across Nigerian timelines right now 🔥
           </p>
           {[["Chidimma_O","Inspector General of States",32],["Emeka_Benz","Inter State Operator",13],["Halima_K","Village Champion",4]].map(([n,t,s]) => (
@@ -784,7 +888,7 @@ function GameScreen({ stateName, currentIdx, total, animating, onAnswer }) {
         {/* Progress */}
         <div style={{ marginBottom:28 }}>
           <div style={{ display:"flex", justifyContent:"space-between", marginBottom:7 }}>
-            <span style={{ color:"#d1fae5", fontSize:13 }}>{currentIdx} / {total} answered</span>
+            <span style={{ color:"#6b7280", fontSize:13 }}>{currentIdx} / {total} answered</span>
             <span style={{ color:"#4ade80", fontSize:13, fontWeight:700 }}>{pct}%</span>
           </div>
           <div style={{ height:7, background:"#1e293b", borderRadius:9 }}>
@@ -809,13 +913,13 @@ function GameScreen({ stateName, currentIdx, total, animating, onAnswer }) {
           }}
         >
           <div style={{ fontSize:44, marginBottom:12 }}>📍</div>
-          <p style={{ color:"#86efac", fontSize:13, fontWeight:600, letterSpacing:".08em", marginBottom:8 }}>
+          <p style={{ color:"#6b7280", fontSize:13, fontWeight:600, letterSpacing:".08em", marginBottom:8 }}>
             HAVE YOU EVER VISITED
           </p>
           <h2 style={{ color:"#fff", fontSize:28, fontWeight:800, lineHeight:1.15 }}>
             {displayName}?
           </h2>
-          <p style={{ color:"#86efac", fontSize:12, marginTop:10 }}>
+          <p style={{ color:"#374151", fontSize:12, marginTop:10 }}>
             Physically. In person. For real. 👀
           </p>
         </div>
@@ -825,7 +929,7 @@ function GameScreen({ stateName, currentIdx, total, animating, onAnswer }) {
           <button className="yb" onClick={() => onAnswer(true)}  disabled={animating}>✅ Yes</button>
           <button className="nb" onClick={() => onAnswer(false)} disabled={animating}>❌ No</button>
         </div>
-        <p style={{ color:"#6ee7b7", fontSize:12, textAlign:"center", marginTop:14 }}>
+        <p style={{ color:"#1c2b1c", fontSize:12, textAlign:"center", marginTop:14 }}>
           No overthinking — gut feel only
         </p>
       </div>
@@ -1015,8 +1119,8 @@ function LeaderboardScreen({ leaderboard, myNickname, onBack }) {
             ← Back
           </button>
           <h2 style={{ color:"#fff", fontSize:26, fontWeight:800 }}>🏆 Leaderboard</h2>
-<p style={{ color:"#86efac", fontSize:13, marginTop:4 }}>
-  Global — powered by Supabase
+          <p style={{ color:"#6b7280", fontSize:13, marginTop:4 }}>
+            Top travellers on this device
           </p>
         </div>
 
@@ -1062,6 +1166,10 @@ function LeaderboardScreen({ leaderboard, myNickname, onBack }) {
           })
         )}
 
+        <p style={{ color:"#374151", fontSize:11, textAlign:"center", marginTop:20, lineHeight:1.5 }}>
+          Leaderboard is stored on this device.<br/>
+          Connect a database to make it global.
+        </p>
       </div>
     </div>
   );
