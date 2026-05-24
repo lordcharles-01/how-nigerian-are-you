@@ -655,7 +655,151 @@ function LandingScreen({ onStart, leaderboard }) {
     <div style={{ minHeight:"100vh", background:BG, fontFamily:FF, overflowX:"hidden" }}>
       <style>{GCSS + `
         .lp1 { animation: hFadeUp .7s ease both; }
-        .lp2 { animation: hFadeUp .7s .// ─── GAME ─────────────────────────────────────────────────────────────────────
+        .lp2 { animation: hFadeUp .7s .1s ease both; }
+        .lp3 { animation: hFadeUp .7s .2s ease both; }
+        .lp4 { animation: hFadeUp .7s .3s ease both; }
+        .flt { animation: hFloat 3s ease-in-out infinite; display: inline-block; }
+        .pls { animation: hPulse 2.2s ease-in-out infinite; }
+      \`}</style>
+
+      <div style={{ maxWidth:430, margin:"0 auto", padding:"0 18px 52px" }}>
+
+        <div className="lp1" style={{ paddingTop:52, textAlign:"center" }}>
+          <span className="htag">🇳🇬 The Original Nigerian Travel Test</span>
+          <div className="flt" style={{ marginTop:22, fontSize:64 }}>🗺️</div>
+          <h1 style={{ color:"#fff", fontSize:34, fontWeight:800, lineHeight:1.1, letterSpacing:"-0.02em", marginTop:10 }}>
+            How Nigerian<br/>Are You?
+          </h1>
+          <p style={{ color:"#86efac", marginTop:12, fontSize:15, lineHeight:1.65 }}>
+            How many states have you actually <strong style={{ color:"#4ade80" }}>stepped foot in?</strong><br/>
+            No lies. No audio travelling. 👀
+          </p>
+        </div>
+
+        <div className="lp2" style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8, marginTop:26 }}>
+          {[["37","States"],["6","Zones"],["2min","To play"]].map(([n,l]) => (
+            <div key={n} className="hcard" style={{ padding:"12px 6px", textAlign:"center" }}>
+              <div style={{ color:"#4ade80", fontSize:22, fontWeight:800 }}>{n}</div>
+              <div style={{ color:"#86efac", fontSize:11, marginTop:2 }}>{l}</div>
+            </div>
+          ))}
+        </div>
+
+        <div className="lp3" style={{ marginTop:22 }}>
+          <button className="hbtn pls" onClick={onStart}>Start the Quiz →</button>
+          <p style={{ color:"#d1fae5", fontSize:12, textAlign:"center", marginTop:7 }}>
+            No sign-up. No long thing. Pure vibes only.
+          </p>
+        </div>
+
+        {leaderboard.length > 0 && (
+          <div className="lp4 hcard" style={{ marginTop:26, padding:16 }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
+              <span style={{ color:"#fff", fontWeight:700, fontSize:14 }}>🏆 Top Travellers</span>
+              <span className="htag" style={{ fontSize:10 }}>🌍 GLOBAL</span>
+            </div>
+            {leaderboard.slice(0,5).map((e,i) => (
+              <div key={e.id} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"7px 0", borderBottom:i<4?"1px solid rgba(255,255,255,.05)":"none" }}>
+                <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                  <span style={{ fontSize:14, color:i===0?"#fbbf24":"#6b7280" }}>
+                    {i===0?"👑":i===1?"🥈":i===2?"🥉":`#${i+1}`}
+                  </span>
+                  <span style={{ color:"#e5e7eb", fontSize:14, fontWeight:600 }}>{e.nickname}</span>
+                </div>
+                <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+                  <span style={{ color:"#4ade80", fontWeight:700, fontSize:14 }}>{e.score}/37</span>
+                  <div style={{ width:34, height:4, background:"#1f2937", borderRadius:9 }}>
+                    <div style={{ width:`${(e.score/37)*100}%`, height:"100%", background:"#16a34a", borderRadius:9 }}/>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="lp4" style={{ marginTop:16 }}>
+          <p style={{ color:"#86efac", fontSize:12, textAlign:"center", marginBottom:8, fontWeight:600 }}>
+            Spreading across Nigerian timelines right now 🔥
+          </p>
+          {[["Chidimma_O","Inspector General of States",32],["Emeka_Benz","Inter State Operator",13],["Halima_K","Village Champion",4]].map(([n,t,s]) => (
+            <div key={n} className="hcard" style={{ padding:"10px 14px", marginBottom:7, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+              <div>
+                <div style={{ color:"#fff", fontWeight:600, fontSize:13 }}>{n}</div>
+                <div style={{ color:"#86efac", fontSize:11 }}>{t}</div>
+              </div>
+              <span style={{ color:"#4ade80", fontWeight:800, fontSize:20 }}>{s}/37</span>
+            </div>
+          ))}
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+// ─── CHALLENGE ────────────────────────────────────────────────────────────────
+function ChallengeScreen({ data, onAccept }) {
+  return (
+    <div style={{ minHeight:"100vh", background:BG, fontFamily:FF, display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}>
+      <style>{GCSS}</style>
+      <div style={{ maxWidth:400, width:"100%", textAlign:"center" }}>
+        <div style={{ fontSize:56, marginBottom:10 }}>⚔️</div>
+        <h2 style={{ color:"#fff", fontSize:26, fontWeight:800 }}>You've Been Challenged!</h2>
+        <div className="hcard" style={{ padding:22, margin:"18px 0", border:"1px solid rgba(74,222,128,.22)" }}>
+          <p style={{ color:"#86efac", fontSize:14 }}>The gauntlet was thrown by</p>
+          <p style={{ color:"#fff", fontSize:28, fontWeight:800, margin:"8px 0" }}>{data?.nickname}</p>
+          <div style={{ background:"rgba(5,46,22,.6)", borderRadius:12, padding:"12px 20px", display:"inline-block" }}>
+            <span style={{ color:"#4ade80", fontSize:38, fontWeight:800 }}>{data?.score}</span>
+            <span style={{ color:"#6b7280", fontSize:20 }}>/37</span>
+          </div>
+          <p style={{ color:"#fbbf24", fontWeight:700, fontSize:14, marginTop:10 }}>"{data?.title}"</p>
+        </div>
+        <p style={{ color:"#86efac", marginBottom:18, fontSize:14 }}>Can you beat this? Show them what you're made of. 🇳🇬</p>
+        <button className="hbtn" onClick={onAccept}>Accept the Challenge →</button>
+      </div>
+    </div>
+  );
+}
+
+// ─── NAME ─────────────────────────────────────────────────────────────────────
+function NameScreen({ value, onChange, onNext }) {
+  return (
+    <div style={{ minHeight:"100vh", background:BG, fontFamily:FF, display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}>
+      <style>{GCSS}</style>
+      <div style={{ maxWidth:400, width:"100%", textAlign:"center" }}>
+        <div style={{ fontSize:50, marginBottom:12 }}>✍️</div>
+        <h2 style={{ color:"#fff", fontSize:26, fontWeight:800 }}>What do they call you?</h2>
+        <p style={{ color:"#86efac", marginTop:8, fontSize:14, lineHeight:1.5 }}>
+          Your name goes on the leaderboard.<br/>No surname, no drama.
+        </p>
+        <input
+          type="text"
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          onKeyDown={e => e.key === "Enter" && onNext()}
+          placeholder="e.g. Tunde, Ngozi, Chioma..."
+          maxLength={20}
+          autoFocus
+          style={{
+            width:"100%", marginTop:22, padding:"14px 18px",
+            background:"rgba(255,255,255,.07)",
+            border:"2px solid rgba(74,222,128,.3)",
+            borderRadius:14, color:"#fff", fontSize:18,
+            fontFamily:FF, outline:"none", textAlign:"center",
+          }}
+        />
+        <button className="hbtn" style={{ marginTop:14 }} onClick={onNext}>
+          Let's Go →
+        </button>
+        <p style={{ color:"#6ee7b7", fontSize:11, marginTop:8 }}>
+          Leave blank to play as Anonymous
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ─── GAME ─────────────────────────────────────────────────────────────────────
 function GameScreen({ stateName, currentIdx, total, animating, onAnswer, onBack }) {
   const pct         = Math.round((currentIdx / total) * 100);
   const displayName = stateName === "FCT Abuja" ? "FCT Abuja" : `${stateName} State`;
