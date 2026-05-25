@@ -239,8 +239,8 @@ async function lb_read() {
   if (!SUPA_URL || !SUPA_KEY) return lsGet("hna_lb", []);
   try {
     const res = await fetch(
-      `${SUPA_URL}/rest/v1/scores?select=id,nickname,score,ts&order=score.desc,ts.desc&limit=20`,
-      { headers: { apikey: SUPA_KEY, Authorization: `Bearer ${SUPA_KEY}` } }
+      SUPA_URL+"/rest/v1/scores?select=id,nickname,score,ts&order=score.desc,ts.desc&limit=20",
+      { headers: { apikey: SUPA_KEY, Authorization: "Bearer "+SUPA_KEY } }
     );
     if (!res.ok) return lsGet("hna_lb", []);
     return await res.json();
@@ -252,11 +252,11 @@ async function lb_read() {
 async function lb_write(entry) {
   if (SUPA_URL && SUPA_KEY) {
     try {
-      await fetch(`${SUPA_URL}/rest/v1/scores`, {
+      await fetch(SUPA_URL+"/rest/v1/scores", {
         method: "POST",
         headers: {
           apikey: SUPA_KEY,
-          Authorization: `Bearer ${SUPA_KEY}`,
+          Authorization: "Bearer "+SUPA_KEY,
           "Content-Type": "application/json",
           Prefer: "return=minimal",
         },
@@ -278,7 +278,7 @@ function getBaseUrl() {
 function buildChallengeUrl(nickname, score) {
   const payload = safeEncode({ nickname, score, title: getTitleText(score) });
   const base    = getBaseUrl();
-  return base ? `${base}?challenge=${payload}` : `?challenge=${payload}`;
+  return base ? base+"?challenge="+payload : "?challenge="+payload;
 }
 
 // ─── GRID MAP COMPONENT ───────────────────────────────────────────────────────
@@ -586,13 +586,13 @@ export default function App() {
     if (!result) return;
     const { nickname:nick, score, title } = result;
     const challengeUrl = buildChallengeUrl(nick, score);
-    const text = `I scored ${score}/37 on "How Nigerian Are You?" — ${title}. Think you can beat me?`;
+    const text = "I scored "+score+'/37 on "How Nigerian Are You?" — '+title+". Think you can beat me?";
     const enc  = encodeURIComponent;
     const links = {
-      twitter:  `https://twitter.com/intent/tweet?text=${enc(text + " " + challengeUrl)}`,
-      whatsapp: `https://api.whatsapp.com/send?text=${enc(text + " " + challengeUrl)}`,
-      telegram: `https://t.me/share/url?url=${enc(challengeUrl)}&text=${enc(text)}`,
-      facebook: `https://www.facebook.com/sharer/sharer.php?u=${enc(getBaseUrl())}&quote=${enc(text)}`,
+      twitter:  "https://twitter.com/intent/tweet?text="+enc(text+" "+challengeUrl),
+      whatsapp: "https://api.whatsapp.com/send?text="+enc(text+" "+challengeUrl),
+      telegram: "https://t.me/share/url?url="+enc(challengeUrl)+"&text="+enc(text),
+      facebook: "https://www.facebook.com/sharer/sharer.php?u="+enc(getBaseUrl())+"&quote="+enc(text),
     };
     if (platform === "copy") {
       try {
@@ -802,7 +802,7 @@ function NameScreen({ value, onChange, onNext }) {
 // ─── GAME ─────────────────────────────────────────────────────────────────────
 function GameScreen({ stateName, currentIdx, total, animating, onAnswer, onBack }) {
   const pct         = Math.round((currentIdx / total) * 100);
-  const displayName = stateName === "FCT Abuja" ? "FCT Abuja" : `${stateName} State`;
+  const displayName = stateName === "FCT Abuja" ? "FCT Abuja" : stateName+" State";
   const factData    = STATE_FACTS[stateName] || { fact: "", icon: "📍" };
   const canGoBack   = currentIdx > 0;
 
@@ -1004,7 +1004,7 @@ function NameScreen({ value, onChange, onNext }) {
 // ─── GAME ─────────────────────────────────────────────────────────────────────
 function GameScreen({ stateName, currentIdx, total, animating, onAnswer }) {
   const pct         = Math.round((currentIdx / total) * 100);
-  const displayName = stateName === "FCT Abuja" ? "FCT Abuja" : `${stateName} State`;
+  const displayName = stateName === "FCT Abuja" ? "FCT Abuja" : stateName+" State";
 
   return (
     <div style={{ minHeight:"100vh", background:"linear-gradient(155deg,#01080300,#0b1a0c)", fontFamily:FF, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"20px 18px" }}>
