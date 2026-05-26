@@ -1,24 +1,8 @@
 "use client";
-/**
- * HOW NIGERIAN ARE YOU?
- * Production-ready React single-file component.
- *
- * DEPLOYMENT (Vercel / GitHub):
- * 1. npx create-next-app@latest hna --app --js
- * 2. Replace contents of app/page.js with:
- *      import Game from "@/components/Game";
- *      export default function Page() { return <Game />; }
- * 3. Copy this file to components/Game.jsx (add "use client"; as first line)
- * 4. npm run build && vercel deploy
- *
- * Leaderboard uses localStorage — works with zero backend.
- * To upgrade to Supabase, swap the two functions marked SUPABASE_SWAP below.
- */
 
 import { useState, useEffect, useRef } from "react";
 
-// ─── SAFE BASE64 ─────────────────────────────────────────────────────────────
-// btoa() crashes on Unicode/emoji. This wrapper handles it safely.
+// ─── SAFE BASE64 ──────────────────────────────────────────────────────────────
 function safeEncode(obj) {
   try { return btoa(unescape(encodeURIComponent(JSON.stringify(obj)))); }
   catch { return btoa(JSON.stringify(obj).replace(/[^\x00-\x7F]/g, "?")); }
@@ -69,7 +53,28 @@ const STATES = [
   { name:"Zamfara",     zone:"North West",    abbr:"ZA" },
 ];
 
+const ZONES = ["North West","North East","North Central","South West","South East","South South"];
 
+const ZONE_COLOR = {
+  "North West":   { base:"#1a3a5c", visited:"#3b82f6", label:"#93c5fd" },
+  "North East":   { base:"#1a3d2a", visited:"#16a34a", label:"#86efac" },
+  "North Central":{ base:"#2e1f4a", visited:"#8b5cf6", label:"#c4b5fd" },
+  "South West":   { base:"#3d1515", visited:"#dc2626", label:"#fca5a5" },
+  "South East":   { base:"#1a3333", visited:"#0d9488", label:"#5eead4" },
+  "South South":  { base:"#1c3320", visited:"#15803d", label:"#4ade80" },
+};
+
+const MAP_GRID = [
+  ["Sokoto",  "Kebbi",    "Zamfara",  "Katsina",   "Kano",      "Jigawa",   "Yobe"    ],
+  ["",        "",         "Niger",    "Kaduna",    "Bauchi",    "Gombe",    "Borno"   ],
+  ["",        "",         "Kwara",    "FCT Abuja", "Nasarawa",  "Plateau",  "Adamawa" ],
+  ["",        "",         "Kogi",     "Benue",     "",          "Taraba",   ""        ],
+  ["Lagos",   "Ogun",     "Oyo",      "Osun",      "Ekiti",     "Ondo",     "Edo"     ],
+  ["",        "",         "Anambra",  "Imo",       "Abia",      "Enugu",    "Ebonyi"  ],
+  ["",        "Bayelsa",  "Delta",    "Rivers",    "Cross River","Akwa Ibom",""       ],
+];
+
+// ─── STATE FACTS ──────────────────────────────────────────────────────────────
 const STATE_FACTS = {
   "Abia":        { fact: "Aba, in Abia State, is Nigeria's manufacturing capital. The shoes, bags and clothes made here are exported across West Africa and beyond.", icon: "👟" },
   "Adamawa":     { fact: "The Mandara Mountains in Adamawa reach over 1,400 metres and are home to some of the most dramatic landscapes in all of Nigeria.", icon: "⛰️" },
@@ -110,32 +115,7 @@ const STATE_FACTS = {
   "Zamfara":     { fact: "Home to the Kuyambana Forest Reserve, one of north-west Nigeria's major savannah woodland ecosystems and a historic refuge for wildlife.", icon: "🌲" },
 };
 
-const ZONES = ["North West","North East","North Central","South West","South East","South South"];
-
-// Zone colours used on the grid map
-const ZONE_COLOR = {
-  "North West":  { base:"#1a3a5c", visited:"#3b82f6", label:"#93c5fd" },
-  "North East":  { base:"#1a3d2a", visited:"#16a34a", label:"#86efac" },
-  "North Central":{ base:"#2e1f4a", visited:"#8b5cf6", label:"#c4b5fd" },
-  "South West":  { base:"#3d1515", visited:"#dc2626", label:"#fca5a5" },
-  "South East":  { base:"#1a3333", visited:"#0d9488", label:"#5eead4" },
-  "South South": { base:"#1c3320", visited:"#15803d", label:"#4ade80" },
-};
-
-// ─── MAP GRID ─────────────────────────────────────────────────────────────────
-// 7 columns × 7 rows. Mirrors Nigeria's north-south, west-east geography.
-// Empty strings are blank cells that preserve spatial shape.
-const MAP_GRID = [
-  ["Sokoto",    "Kebbi",     "Zamfara",   "Katsina",    "Kano",       "Jigawa",    "Yobe"     ],
-  ["",          "",          "Niger",     "Kaduna",     "Bauchi",     "Gombe",     "Borno"    ],
-  ["",          "",          "Kwara",     "FCT Abuja",  "Nasarawa",   "Plateau",   "Adamawa"  ],
-  ["",          "",          "Kogi",      "Benue",      "",           "Taraba",    ""         ],
-  ["Lagos",     "Ogun",      "Oyo",       "Osun",       "Ekiti",      "Ondo",      "Edo"      ],
-  ["",          "",          "Anambra",   "Imo",        "Abia",       "Enugu",     "Ebonyi"   ],
-  ["",          "Bayelsa",   "Delta",     "Rivers",     "Cross River","Akwa Ibom", ""         ],
-];
-
-// ─── HELPERS ──────────────────────────────────────────────────────────────────
+// ─── TITLE / SUMMARY HELPERS ─────────────────────────────────────────────────
 function getTitleText(s) {
   if (s === 0)  return "Stay At Home Boss";
   if (s <= 3)   return "Village Champion";
@@ -153,6 +133,7 @@ function getTitleText(s) {
   if (s <= 36)  return "Dangote of Travel";
   return "Mungo Park Reincarnated";
 }
+
 function getTitleEmoji(s) {
   if (s === 0)  return "🛋️";
   if (s <= 3)   return "🏘️";
@@ -170,6 +151,7 @@ function getTitleEmoji(s) {
   if (s <= 36)  return "💰";
   return "🏆";
 }
+
 function getSummary(s) {
   if (s === 0)  return "Zero states. Not even your state of origin. We need to talk.";
   if (s <= 3)   return "At this point, even Google Maps is asking questions. When will you travel?";
@@ -198,17 +180,17 @@ function shuffle(arr) {
 }
 
 function buildResultObject(answers, nickname) {
-  const visited    = Object.keys(answers).filter(k => answers[k]);
-  const sc         = visited.length;
-  const zMap       = {};
-  ZONES.forEach(z => { zMap[z] = { zone:z, visited:0, total:0 }; });
+  const visited = Object.keys(answers).filter(k => answers[k]);
+  const sc = visited.length;
+  const zMap = {};
+  ZONES.forEach(z => { zMap[z] = { zone: z, visited: 0, total: 0 }; });
   STATES.forEach(s => {
     zMap[s.zone].total++;
     if (visited.includes(s.name)) zMap[s.zone].visited++;
   });
-  const zoneStats      = ZONES.map(z => zMap[z]);
+  const zoneStats = ZONES.map(z => zMap[z]);
   const zonesCompleted = zoneStats.filter(z => z.visited === z.total).length;
-  const notVisited     = STATES.map(s => s.name).filter(n => !visited.includes(n));
+  const notVisited = STATES.map(s => s.name).filter(n => !visited.includes(n));
   return {
     nickname: (nickname || "").trim() || "Anonymous",
     score: sc,
@@ -217,34 +199,41 @@ function buildResultObject(answers, nickname) {
     zoneStats,
     zonesCompleted,
     notVisited,
-    title:   getTitleText(sc),
-    emoji:   getTitleEmoji(sc),
+    title: getTitleText(sc),
+    emoji: getTitleEmoji(sc),
     summary: getSummary(sc),
   };
 }
 
-// ─── STORAGE ──────────────────────────────────────────────────────────────────
-function lsGet(key, fallback = null) {
-  try { const v = localStorage.getItem(key); return v != null ? JSON.parse(v) : fallback; }
-  catch { return fallback; }
+// ─── STORAGE ─────────────────────────────────────────────────────────────────
+function lsGet(key, fallback) {
+  if (fallback === undefined) fallback = null;
+  try {
+    var v = localStorage.getItem(key);
+    return v != null ? JSON.parse(v) : fallback;
+  } catch (e) { return fallback; }
 }
-function lsSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
-function lsDel(key)      { try { localStorage.removeItem(key); } catch {} }
+function lsSet(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {}
+}
+function lsDel(key) {
+  try { localStorage.removeItem(key); } catch (e) {}
+}
 
 // ─── SUPABASE LEADERBOARD ─────────────────────────────────────────────────────
-const SUPA_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const SUPA_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+var SUPA_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+var SUPA_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 async function lb_read() {
   if (!SUPA_URL || !SUPA_KEY) return lsGet("hna_lb", []);
   try {
-    const res = await fetch(
-      SUPA_URL+"/rest/v1/scores?select=id,nickname,score,ts&order=score.desc,ts.desc&limit=20",
-      { headers: { apikey: SUPA_KEY, Authorization: "Bearer "+SUPA_KEY } }
+    var res = await fetch(
+      SUPA_URL + "/rest/v1/scores?select=id,nickname,score,ts&order=score.desc,ts.desc&limit=20",
+      { headers: { apikey: SUPA_KEY, Authorization: "Bearer " + SUPA_KEY } }
     );
     if (!res.ok) return lsGet("hna_lb", []);
     return await res.json();
-  } catch {
+  } catch (e) {
     return lsGet("hna_lb", []);
   }
 }
@@ -252,67 +241,72 @@ async function lb_read() {
 async function lb_write(entry) {
   if (SUPA_URL && SUPA_KEY) {
     try {
-      await fetch(SUPA_URL+"/rest/v1/scores", {
+      await fetch(SUPA_URL + "/rest/v1/scores", {
         method: "POST",
         headers: {
           apikey: SUPA_KEY,
-          Authorization: "Bearer "+SUPA_KEY,
+          Authorization: "Bearer " + SUPA_KEY,
           "Content-Type": "application/json",
           Prefer: "return=minimal",
         },
         body: JSON.stringify(entry),
       });
-    } catch {}
+    } catch (e) {}
   }
-  const rows = lsGet("hna_lb", []);
-  rows.push({ ...entry, id: String(Date.now()) });
-  rows.sort((a, b) => b.score - a.score || b.ts - a.ts);
+  var rows = lsGet("hna_lb", []);
+  rows.push(Object.assign({}, entry, { id: String(Date.now()) }));
+  rows.sort(function(a, b) { return b.score - a.score || b.ts - a.ts; });
   lsSet("hna_lb", rows.slice(0, 100));
 }
 
-// ─── URL ──────────────────────────────────────────────────────────────────────
+// ─── URL HELPERS ──────────────────────────────────────────────────────────────
 function getBaseUrl() {
-  try { return typeof window !== "undefined" ? window.location.href.split("?")[0] : ""; }
-  catch { return ""; }
+  try {
+    if (typeof window !== "undefined" && window.location && window.location.href) {
+      return window.location.href.split("?")[0];
+    }
+  } catch (e) {}
+  return "";
 }
+
 function buildChallengeUrl(nickname, score) {
-  const payload = safeEncode({ nickname, score, title: getTitleText(score) });
-  const base    = getBaseUrl();
-  return base ? base+"?challenge="+payload : "?challenge="+payload;
+  var payload = safeEncode({ nickname: nickname, score: score, title: getTitleText(score) });
+  var base = getBaseUrl();
+  return base ? base + "?challenge=" + payload : "?challenge=" + payload;
 }
 
-// ─── GRID MAP COMPONENT ───────────────────────────────────────────────────────
-function NigeriaGridMap({ visited = [] }) {
-  const visitedSet = new Set(visited);
-  const stateZone  = Object.fromEntries(STATES.map(s => [s.name, s.zone]));
-  const stateAbbr  = Object.fromEntries(STATES.map(s => [s.name, s.abbr]));
+// ─── GRID MAP ─────────────────────────────────────────────────────────────────
+function NigeriaGridMap(props) {
+  var visited = props.visited || [];
+  var visitedSet = new Set(visited);
+  var stateZone = {};
+  var stateAbbr = {};
+  STATES.forEach(function(s) { stateZone[s.name] = s.zone; stateAbbr[s.name] = s.abbr; });
 
-  const CELL = 44;   // px per cell
-  const GAP  = 3;    // px gap
-  const COLS = MAP_GRID[0].length;
-  const ROWS = MAP_GRID.length;
-  const W    = COLS * CELL + (COLS - 1) * GAP;
-  const H    = ROWS * CELL + (ROWS - 1) * GAP;
+  var CELL = 44;
+  var GAP = 3;
+  var COLS = MAP_GRID[0].length;
+  var ROWS = MAP_GRID.length;
+  var W = COLS * CELL + (COLS - 1) * GAP;
+  var H = ROWS * CELL + (ROWS - 1) * GAP;
 
   return (
-    <div style={{ width:"100%", overflowX:"auto" }}>
+    <div style={{ width: "100%", overflowX: "auto" }}>
       <svg
-        viewBox={"0 0 "+W+" "+H}
-        style={{ width:"100%", maxWidth:W, height:"auto", display:"block", margin:"0 auto" }}
-        aria-label="Nigeria state grid map"
+        viewBox={"0 0 " + W + " " + H}
+        style={{ width: "100%", maxWidth: W, height: "auto", display: "block", margin: "0 auto" }}
       >
-        {MAP_GRID.map((row, ri) =>
-          row.map((name, ci) => {
+        {MAP_GRID.map(function(row, ri) {
+          return row.map(function(name, ci) {
             if (!name) return null;
-            const zone  = stateZone[name];
-            const abbr  = stateAbbr[name];
-            const isV   = visitedSet.has(name);
-            const col   = ZONE_COLOR[zone];
-            const fill  = isV ? col.visited : col.base;
-            const textC = isV ? "#ffffff"   : col.label;
-            const x     = ci * (CELL + GAP);
-            const y     = ri * (CELL + GAP);
-
+            var zone = stateZone[name];
+            var abbr = stateAbbr[name];
+            var isV = visitedSet.has(name);
+            var col = ZONE_COLOR[zone];
+            var fill = isV ? col.visited : col.base;
+            var textC = isV ? "#ffffff" : col.label;
+            var x = ci * (CELL + GAP);
+            var y = ri * (CELL + GAP);
             return (
               <g key={name}>
                 <rect
@@ -321,49 +315,44 @@ function NigeriaGridMap({ visited = [] }) {
                   stroke={isV ? textC : "rgba(255,255,255,0.08)"}
                   strokeWidth={isV ? 1.5 : 0.5}
                 />
-                {/* Abbreviation */}
                 <text
                   x={x + CELL / 2}
                   y={y + CELL / 2 + (isV ? -2 : 2)}
-                  textAnchor="middle" dominantBaseline="middle"
+                  textAnchor="middle"
+                  dominantBaseline="middle"
                   fontSize={isV ? 9 : 8}
                   fontWeight={isV ? "800" : "500"}
                   fill={textC}
-                  style={{ userSelect:"none", fontFamily:"'Sora','Segoe UI',sans-serif" }}
+                  style={{ userSelect: "none", fontFamily: "'Sora','Segoe UI',sans-serif" }}
                 >
                   {abbr}
                 </text>
-                {/* Green dot for visited */}
                 {isV && (
-                  <circle
-                    cx={x + CELL - 7} cy={y + 7} r={3.5}
-                    fill="#4ade80"
-                  />
+                  <circle cx={x + CELL - 7} cy={y + 7} r={3.5} fill="#4ade80" />
                 )}
               </g>
             );
-          })
-        )}
+          });
+        })}
       </svg>
-
-      {/* Zone colour legend */}
-      <div style={{
-        display:"grid", gridTemplateColumns:"1fr 1fr 1fr",
-        gap:"5px 10px", marginTop:10, padding:"0 2px",
-      }}>
-        {ZONES.map(z => {
-          const col     = ZONE_COLOR[z];
-          const total   = STATES.filter(s => s.zone === z).length;
-          const vCount  = visited.filter(n => STATES.find(s => s.name === n)?.zone === z).length;
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "5px 10px", marginTop: 10, padding: "0 2px" }}>
+        {ZONES.map(function(z) {
+          var col = ZONE_COLOR[z];
+          var total = STATES.filter(function(s) { return s.zone === z; }).length;
+          var vCount = visited.filter(function(n) {
+            var st = STATES.find(function(s) { return s.name === n; });
+            return st && st.zone === z;
+          }).length;
           return (
-            <div key={z} style={{ display:"flex", alignItems:"center", gap:5 }}>
+            <div key={z} style={{ display: "flex", alignItems: "center", gap: 5 }}>
               <div style={{
-                width:10, height:10, borderRadius:2,
+                width: 10, height: 10, borderRadius: 2,
                 background: vCount > 0 ? col.visited : col.base,
-                border:"1px solid "+col.label, flexShrink:0,
-              }}/>
-              <span style={{ color:"#9ca3af", fontSize:9, lineHeight:1.2 }}>
-                {z} ({vCount}/{total})
+                border: "1px solid " + col.label,
+                flexShrink: 0,
+              }} />
+              <span style={{ color: "#9ca3af", fontSize: 9, lineHeight: 1.2 }}>
+                {z + " (" + vCount + "/" + total + ")"}
               </span>
             </div>
           );
@@ -374,135 +363,140 @@ function NigeriaGridMap({ visited = [] }) {
 }
 
 // ─── CONFETTI ─────────────────────────────────────────────────────────────────
-function Confetti({ active }) {
-  const pts = useRef(
-    Array.from({ length: 65 }, (_, i) => ({
-      id: i,
-      x: Math.random() * 100,
-      delay: Math.random() * 2.5,
-      dur: 2 + Math.random() * 2,
-      color: ["#16a34a","#4ade80","#ffffff","#fbbf24","#f87171","#60a5fa"][i % 6],
-      size: 5 + Math.random() * 7,
-      rect: Math.random() > 0.5,
-    }))
+function Confetti(props) {
+  var active = props.active;
+  var pts = useRef(
+    Array.from({ length: 65 }, function(_, i) {
+      return {
+        id: i,
+        x: Math.random() * 100,
+        delay: Math.random() * 2.5,
+        dur: 2 + Math.random() * 2,
+        color: ["#16a34a","#4ade80","#ffffff","#fbbf24","#f87171","#60a5fa"][i % 6],
+        size: 5 + Math.random() * 7,
+        rect: Math.random() > 0.5,
+      };
+    })
   );
   if (!active) return null;
   return (
-    <div style={{ position:"fixed",inset:0,pointerEvents:"none",zIndex:9999,overflow:"hidden" }}>
-      <style>{`
-        @keyframes cffall {
-          0%   { transform: translateY(-10px) rotate(0deg);   opacity: 1; }
-          100% { transform: translateY(105vh) rotate(720deg); opacity: 0; }
-        }
-      `}</style>
-      {pts.current.map(p => (
-        <div key={p.id} style={{
-          position:"absolute", left:p.x+"%", top:0,
-          width:p.size, height:p.rect ? p.size * 0.45 : p.size,
-          backgroundColor:p.color, borderRadius:p.rect ? 2 : "50%",
-          animation:"cffall "+p.dur+"s "+p.delay+"s ease-in forwards",
-        }}/>
-      ))}
+    <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 9999, overflow: "hidden" }}>
+      <style dangerouslySetInnerHTML={{ __html: "@keyframes cffall { 0% { transform: translateY(-10px) rotate(0deg); opacity: 1; } 100% { transform: translateY(105vh) rotate(720deg); opacity: 0; } }" }} />
+      {pts.current.map(function(p) {
+        return (
+          <div key={p.id} style={{
+            position: "absolute",
+            left: p.x + "%",
+            top: 0,
+            width: p.size,
+            height: p.rect ? p.size * 0.45 : p.size,
+            backgroundColor: p.color,
+            borderRadius: p.rect ? 2 : "50%",
+            animation: "cffall " + p.dur + "s " + p.delay + "s ease-in forwards",
+          }} />
+        );
+      })}
     </div>
   );
 }
 
 // ─── GLOBAL CSS ───────────────────────────────────────────────────────────────
-const GCSS = `
-  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&display=swap');
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: #052e16; }
+// All CSS is defined once here as a plain string — no template literals, no nesting.
+// Each screen injects only GCSS via dangerouslySetInnerHTML.
+var GCSS = [
+  "@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&display=swap');",
+  "*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}",
+  "body{background:#052e16}",
+  ".hbtn{background:linear-gradient(135deg,#16a34a,#15803d);border:none;color:#fff;",
+  "  font-family:'Sora','Segoe UI',sans-serif;font-weight:800;font-size:17px;",
+  "  padding:16px 24px;border-radius:16px;cursor:pointer;width:100%;",
+  "  box-shadow:0 6px 24px rgba(22,163,74,.4);transition:transform .15s,box-shadow .15s}",
+  ".hbtn:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(22,163,74,.6)}",
+  ".hbtn:active{transform:translateY(0)}",
+  ".hcard{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:18px}",
+  ".htag{display:inline-block;background:rgba(74,222,128,.14);border:1px solid rgba(74,222,128,.3);",
+  "  color:#4ade80;padding:4px 13px;border-radius:999px;font-size:12px;font-weight:700}",
+  ".sbtn{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);",
+  "  color:#fff;font-family:'Sora','Segoe UI',sans-serif;font-size:13px;font-weight:600;",
+  "  padding:11px 10px;border-radius:12px;cursor:pointer;transition:background .15s;",
+  "  display:flex;align-items:center;justify-content:center;gap:5px}",
+  ".sbtn:hover{background:rgba(255,255,255,.13)}",
+  "@keyframes hFadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}",
+  "@keyframes hFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}",
+  "@keyframes hPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}",
+  "@keyframes hSlideIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}",
+  "@keyframes hReveal{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:scale(1)}}",
+  ".lp1{animation:hFadeUp .7s ease both}",
+  ".lp2{animation:hFadeUp .7s .1s ease both}",
+  ".lp3{animation:hFadeUp .7s .2s ease both}",
+  ".lp4{animation:hFadeUp .7s .3s ease both}",
+  ".flt{animation:hFloat 3s ease-in-out infinite;display:inline-block}",
+  ".pls{animation:hPulse 2.2s ease-in-out infinite}",
+  ".rh{animation:hReveal .5s ease both}",
+  ".rs{animation:hFadeUp .5s .12s ease both}",
+  ".qcard{animation:hSlideIn .25s ease both}",
+  ".yb{background:rgba(22,163,74,.15);border:2px solid #16a34a;color:#4ade80;",
+  "  font-family:'Sora','Segoe UI',sans-serif;font-size:18px;font-weight:700;",
+  "  padding:18px;border-radius:16px;cursor:pointer;width:100%;transition:all .15s}",
+  ".yb:hover{background:rgba(22,163,74,.3)}",
+  ".yb:active{transform:scale(.97)}",
+  ".nb{background:rgba(220,38,38,.12);border:2px solid #dc2626;color:#fca5a5;",
+  "  font-family:'Sora','Segoe UI',sans-serif;font-size:18px;font-weight:700;",
+  "  padding:18px;border-radius:16px;cursor:pointer;width:100%;transition:all .15s}",
+  ".nb:hover{background:rgba(220,38,38,.25)}",
+  ".nb:active{transform:scale(.97)}",
+  ".back-btn{background:none;border:1px solid rgba(255,255,255,.2);color:#86efac;",
+  "  font-family:'Sora','Segoe UI',sans-serif;font-size:13px;font-weight:600;",
+  "  padding:7px 14px;border-radius:8px;cursor:pointer;transition:all .15s;",
+  "  display:flex;align-items:center;gap:5px}",
+  ".back-btn:hover{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.35)}",
+  ".back-btn:disabled{opacity:0.25;pointer-events:none}",
+].join("\n");
 
-  .hbtn {
-    background: linear-gradient(135deg, #16a34a, #15803d);
-    border: none; color: #fff; cursor: pointer; width: 100%;
-    font-family: 'Sora','Segoe UI',sans-serif; font-weight: 800; font-size: 17px;
-    padding: 16px 24px; border-radius: 16px;
-    box-shadow: 0 6px 24px rgba(22,163,74,.4);
-    transition: transform .15s, box-shadow .15s;
-  }
-  .hbtn:hover  { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(22,163,74,.6); }
-  .hbtn:active { transform: translateY(0); }
-
-  .hcard {
-    background: rgba(255,255,255,.05);
-    border: 1px solid rgba(255,255,255,.09);
-    border-radius: 18px;
-  }
-  .htag {
-    display: inline-block;
-    background: rgba(74,222,128,.13); border: 1px solid rgba(74,222,128,.3);
-    color: #4ade80; padding: 4px 13px; border-radius: 999px;
-    font-size: 12px; font-weight: 700;
-  }
-  .sbtn {
-    border: 1px solid rgba(255,255,255,.14);
-    background: rgba(255,255,255,.06);
-    color: #fff; cursor: pointer;
-    font-family: 'Sora','Segoe UI',sans-serif; font-size: 13px; font-weight: 600;
-    padding: 11px 10px; border-radius: 12px;
-    transition: background .15s;
-    display: flex; align-items: center; justify-content: center; gap: 5px;
-  }
-  .sbtn:hover { background: rgba(255,255,255,.13); }
-
-  @keyframes hFadeUp  { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
-  @keyframes hFloat   { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
-  @keyframes hPulse   { 0%,100%{transform:scale(1)} 50%{transform:scale(1.04)} }
-  @keyframes hSlideIn { from{opacity:0;transform:translateX(24px)} to{opacity:1;transform:translateX(0)} }
-  @keyframes hReveal  { from{opacity:0;transform:scale(.93)} to{opacity:1;transform:scale(1)} }
-`;
-const BG = "linear-gradient(155deg,#052e16 0%,#14532d 50%,#0f172a 100%)";
-const FF = "'Sora','Segoe UI',sans-serif";
-
-// Keys for localStorage
-const LS_RESULT  = "hna_result";
-const LS_SESSION = "hna_session";
+var BG = "linear-gradient(155deg,#052e16 0%,#14532d 50%,#0f172a 100%)";
+var FF = "'Sora','Segoe UI',sans-serif";
+var LS_RESULT = "hna_result";
+var LS_SESSION = "hna_session";
 
 // ─── APP ROOT ─────────────────────────────────────────────────────────────────
 export default function App() {
-  // "landing" | "challenge" | "name" | "game" | "result" | "leaderboard"
-  const [screen,     setScreen]     = useState("landing");
-  const [nameInput,  setNameInput]  = useState("");
-  const [nickname,   setNickname]   = useState("");
-  const [stateOrder, setStateOrder] = useState([]);
-  const [currentIdx, setCurrentIdx] = useState(0);
-  const [answers,    setAnswers]    = useState({});
-  const [result,     setResult]     = useState(null);     // atomic — set before screen flip
-  const [leaderboard,setLeaderboard]= useState([]);
-  const [confetti,   setConfetti]   = useState(false);
-  const [challenger, setChallenger] = useState(null);
-  const [animating,  setAnimating]  = useState(false);
-  const tapLock = useRef(false);
+  var [screen, setScreen] = useState("landing");
+  var [nameInput, setNameInput] = useState("");
+  var [nickname, setNickname] = useState("");
+  var [stateOrder, setStateOrder] = useState([]);
+  var [currentIdx, setCurrentIdx] = useState(0);
+  var [answers, setAnswers] = useState({});
+  var [result, setResult] = useState(null);
+  var [leaderboard, setLeaderboard] = useState([]);
+  var [confetti, setConfetti] = useState(false);
+  var [challenger, setChallenger] = useState(null);
+  var [animating, setAnimating] = useState(false);
+  var tapLock = useRef(false);
 
-  // ── Initialise on mount ────────────────────────────────────────────────────
-  useEffect(() => {
-    // 1. Challenge link?
+  useEffect(function() {
     try {
-      const ch = new URLSearchParams(window.location.search).get("challenge");
+      var params = new URLSearchParams(window.location.search);
+      var ch = params.get("challenge");
       if (ch) {
-        const d = safeDecode(ch);
-        if (d?.nickname && typeof d.score === "number") {
+        var d = safeDecode(ch);
+        if (d && d.nickname && typeof d.score === "number") {
           setChallenger(d);
           setScreen("challenge");
           return;
         }
       }
-    } catch {}
+    } catch (e) {}
 
-    // 2. Persisted result from last completed game?
-    //    This is what fixes the blank page on refresh / in-app browsers.
-    const savedResult = lsGet(LS_RESULT);
-    if (savedResult?.score != null) {
+    var savedResult = lsGet(LS_RESULT);
+    if (savedResult && savedResult.score != null) {
       setResult(savedResult);
       if (savedResult.score >= 25) setConfetti(true);
       setScreen("result");
       return;
     }
 
-    // 3. Mid-game session?
-    const sess = lsGet(LS_SESSION);
-    if (sess?.stateOrder?.length && sess.currentIdx < sess.stateOrder.length) {
+    var sess = lsGet(LS_SESSION);
+    if (sess && Array.isArray(sess.stateOrder) && sess.currentIdx < sess.stateOrder.length) {
       setNickname(sess.nickname || "");
       setStateOrder(sess.stateOrder);
       setCurrentIdx(sess.currentIdx);
@@ -511,16 +505,17 @@ export default function App() {
     }
   }, []);
 
-  // Refresh leaderboard whenever we land on those screens
-  useEffect(() => {
-    if (screen === "landing" || screen === "leaderboard")
-      lb_read().then(rows => setLeaderboard((rows || []).slice(0, 20)));
+  useEffect(function() {
+    if (screen === "landing" || screen === "leaderboard") {
+      lb_read().then(function(rows) {
+        setLeaderboard((rows || []).slice(0, 20));
+      });
+    }
   }, [screen]);
 
-  // ── Game flow ──────────────────────────────────────────────────────────────
   function startGame(rawName) {
-    const nick  = rawName.trim() || "Anonymous";
-    const order = shuffle(STATES.map(s => s.name));
+    var nick = (rawName || "").trim() || "Anonymous";
+    var order = shuffle(STATES.map(function(s) { return s.name; }));
     setNickname(nick);
     setStateOrder(order);
     setCurrentIdx(0);
@@ -528,50 +523,48 @@ export default function App() {
     setResult(null);
     setConfetti(false);
     lsDel(LS_RESULT);
-    lsSet(LS_SESSION, { nickname:nick, stateOrder:order, currentIdx:0, answers:{} });
+    lsSet(LS_SESSION, { nickname: nick, stateOrder: order, currentIdx: 0, answers: {} });
     setScreen("game");
   }
 
   function handleAnswer(ans) {
     if (tapLock.current || animating) return;
     tapLock.current = true;
-    setTimeout(() => { tapLock.current = false; }, 380);
+    setTimeout(function() { tapLock.current = false; }, 380);
 
-    const newAnswers = { ...answers, [stateOrder[currentIdx]]: ans };
+    var stateName = stateOrder[currentIdx];
+    var newAnswers = Object.assign({}, answers);
+    newAnswers[stateName] = ans;
     setAnswers(newAnswers);
     setAnimating(true);
 
-    setTimeout(() => {
+    setTimeout(function() {
       setAnimating(false);
-      const next = currentIdx + 1;
-
+      var next = currentIdx + 1;
       if (next >= stateOrder.length) {
-        // ── All 37 done ─────────────────────────────────────────────────────
-        const rd = buildResultObject(newAnswers, nickname);
-        // Persist BEFORE switching screen so refresh never loses it
+        var rd = buildResultObject(newAnswers, nickname);
         lsSet(LS_RESULT, rd);
         lsDel(LS_SESSION);
         lb_write({ nickname: rd.nickname, score: rd.score, ts: Date.now() });
         setResult(rd);
-        if (rd.score >= 25) setTimeout(() => setConfetti(true), 350);
+        if (rd.score >= 25) setTimeout(function() { setConfetti(true); }, 350);
         setScreen("result");
       } else {
         setCurrentIdx(next);
-        lsSet(LS_SESSION, { nickname, stateOrder, currentIdx:next, answers:newAnswers });
+        lsSet(LS_SESSION, { nickname: nickname, stateOrder: stateOrder, currentIdx: next, answers: newAnswers });
       }
     }, 270);
   }
 
-
   function handleBack() {
     if (currentIdx <= 0 || animating) return;
-    const prev = currentIdx - 1;
-    const stateName = stateOrder[prev];
-    const newAnswers = { ...answers };
+    var prev = currentIdx - 1;
+    var stateName = stateOrder[prev];
+    var newAnswers = Object.assign({}, answers);
     delete newAnswers[stateName];
     setAnswers(newAnswers);
     setCurrentIdx(prev);
-    lsSet(LS_SESSION, { nickname, stateOrder, currentIdx: prev, answers: newAnswers });
+    lsSet(LS_SESSION, { nickname: nickname, stateOrder: stateOrder, currentIdx: prev, answers: newAnswers });
   }
 
   function handlePlayAgain() {
@@ -584,42 +577,44 @@ export default function App() {
 
   function shareResult(platform) {
     if (!result) return;
-    const { nickname:nick, score, title } = result;
-    const challengeUrl = buildChallengeUrl(nick, score);
-    const text = "I scored "+score+'/37 on "How Nigerian Are You?" — '+title+". Think you can beat me?";
-    const enc  = encodeURIComponent;
-    const links = {
-      twitter:  "https://twitter.com/intent/tweet?text="+enc(text+" "+challengeUrl),
-      whatsapp: "https://api.whatsapp.com/send?text="+enc(text+" "+challengeUrl),
-      telegram: "https://t.me/share/url?url="+enc(challengeUrl)+"&text="+enc(text),
-      facebook: "https://www.facebook.com/sharer/sharer.php?u="+enc(getBaseUrl())+"&quote="+enc(text),
-    };
+    var nick = result.nickname;
+    var score = result.score;
+    var title = result.title;
+    var challengeUrl = buildChallengeUrl(nick, score);
+    var text = "I scored " + score + "/37 on \"How Nigerian Are You?\" — " + title + ". Think you can beat me?";
+    var enc = encodeURIComponent;
+
     if (platform === "copy") {
       try {
         navigator.clipboard.writeText(challengeUrl)
-          .then(() => alert("Challenge link copied! Send it to your people."),
-                () => alert("Your challenge link:\n" + challengeUrl));
-      } catch { alert("Your challenge link:\n" + challengeUrl); }
+          .then(function() { alert("Challenge link copied!"); },
+                function() { alert("Your link:\n" + challengeUrl); });
+      } catch (e) { alert("Your link:\n" + challengeUrl); }
       return;
     }
     if (platform === "native") {
       try {
-        if (navigator?.share) {
-          navigator.share({ title:"How Nigerian Are You?", text, url:challengeUrl }).catch(()=>{});
+        if (typeof navigator !== "undefined" && navigator.share) {
+          navigator.share({ title: "How Nigerian Are You?", text: text, url: challengeUrl }).catch(function() {});
           return;
         }
-      } catch {}
+      } catch (e) {}
     }
-    try { window.open(links[platform], "_blank", "noopener,noreferrer"); } catch {}
+    var links = {
+      twitter:  "https://twitter.com/intent/tweet?text=" + enc(text + " " + challengeUrl),
+      whatsapp: "https://api.whatsapp.com/send?text=" + enc(text + " " + challengeUrl),
+      telegram: "https://t.me/share/url?url=" + enc(challengeUrl) + "&text=" + enc(text),
+      facebook: "https://www.facebook.com/sharer/sharer.php?u=" + enc(getBaseUrl()) + "&quote=" + enc(text),
+    };
+    try { window.open(links[platform], "_blank", "noopener,noreferrer"); } catch (e) {}
   }
 
-  // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <>
+    <div>
       <Confetti active={confetti} />
-      {screen === "landing"     && <LandingScreen  leaderboard={leaderboard} onStart={() => setScreen("name")} />}
-      {screen === "challenge"   && <ChallengeScreen data={challenger}        onAccept={() => setScreen("name")} />}
-      {screen === "name"        && <NameScreen      value={nameInput} onChange={setNameInput} onNext={() => startGame(nameInput)} />}
+      {screen === "landing"     && <LandingScreen  leaderboard={leaderboard} onStart={function() { setScreen("name"); }} />}
+      {screen === "challenge"   && <ChallengeScreen data={challenger} onAccept={function() { setScreen("name"); }} />}
+      {screen === "name"        && <NameScreen value={nameInput} onChange={setNameInput} onNext={function() { startGame(nameInput); }} />}
       {screen === "game" && stateOrder.length > 0 && (
         <GameScreen
           stateName={stateOrder[currentIdx]}
@@ -634,127 +629,127 @@ export default function App() {
         <ResultScreen
           data={result}
           onPlayAgain={handlePlayAgain}
-          onLeaderboard={() => setScreen("leaderboard")}
+          onLeaderboard={function() { setScreen("leaderboard"); }}
           onShare={shareResult}
         />
       )}
       {screen === "leaderboard" && (
         <LeaderboardScreen
           leaderboard={leaderboard}
-          myNickname={result?.nickname || nickname}
-          onBack={() => setScreen(result ? "result" : "landing")}
+          myNickname={result ? result.nickname : nickname}
+          onBack={function() { setScreen(result ? "result" : "landing"); }}
         />
       )}
-    </>
+    </div>
   );
 }
 
 // ─── LANDING ──────────────────────────────────────────────────────────────────
-function LandingScreen({ onStart, leaderboard }) {
+function LandingScreen(props) {
+  var leaderboard = props.leaderboard;
+  var onStart = props.onStart;
   return (
-    <div style={{ minHeight:"100vh", background:BG, fontFamily:FF, overflowX:"hidden" }}>
-      <style>{GCSS + `
-        .lp1 { animation: hFadeUp .7s ease both; }
-        .lp2 { animation: hFadeUp .7s .1s ease both; }
-        .lp3 { animation: hFadeUp .7s .2s ease both; }
-        .lp4 { animation: hFadeUp .7s .3s ease both; }
-        .flt { animation: hFloat 3s ease-in-out infinite; display: inline-block; }
-        .pls { animation: hPulse 2.2s ease-in-out infinite; }
-      \`}</style>
-
-      <div style={{ maxWidth:430, margin:"0 auto", padding:"0 18px 52px" }}>
-
-        <div className="lp1" style={{ paddingTop:52, textAlign:"center" }}>
+    <div style={{ minHeight: "100vh", background: BG, fontFamily: FF, overflowX: "hidden" }}>
+      <style dangerouslySetInnerHTML={{ __html: GCSS }} />
+      <div style={{ maxWidth: 430, margin: "0 auto", padding: "0 18px 52px" }}>
+        <div className="lp1" style={{ paddingTop: 52, textAlign: "center" }}>
           <span className="htag">🇳🇬 The Original Nigerian Travel Test</span>
-          <div className="flt" style={{ marginTop:22, fontSize:64 }}>🗺️</div>
-          <h1 style={{ color:"#fff", fontSize:34, fontWeight:800, lineHeight:1.1, letterSpacing:"-0.02em", marginTop:10 }}>
-            How Nigerian<br/>Are You?
+          <div className="flt" style={{ marginTop: 22, fontSize: 64 }}>🗺️</div>
+          <h1 style={{ color: "#fff", fontSize: 34, fontWeight: 800, lineHeight: 1.1, letterSpacing: "-0.02em", marginTop: 10 }}>
+            How Nigerian<br />Are You?
           </h1>
-          <p style={{ color:"#86efac", marginTop:12, fontSize:15, lineHeight:1.65 }}>
-            How many states have you actually <strong style={{ color:"#4ade80" }}>stepped foot in?</strong><br/>
+          <p style={{ color: "#86efac", marginTop: 12, fontSize: 15, lineHeight: 1.65 }}>
+            How many states have you actually <strong style={{ color: "#4ade80" }}>stepped foot in?</strong><br />
             No lies. No audio travelling. 👀
           </p>
         </div>
 
-        <div className="lp2" style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8, marginTop:26 }}>
-          {[["37","States"],["6","Zones"],["2min","To play"]].map(([n,l]) => (
-            <div key={n} className="hcard" style={{ padding:"12px 6px", textAlign:"center" }}>
-              <div style={{ color:"#4ade80", fontSize:22, fontWeight:800 }}>{n}</div>
-              <div style={{ color:"#86efac", fontSize:11, marginTop:2 }}>{l}</div>
-            </div>
-          ))}
+        <div className="lp2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginTop: 26 }}>
+          {[["37","States"],["6","Zones"],["2min","To play"]].map(function(item) {
+            return (
+              <div key={item[0]} className="hcard" style={{ padding: "12px 6px", textAlign: "center" }}>
+                <div style={{ color: "#4ade80", fontSize: 22, fontWeight: 800 }}>{item[0]}</div>
+                <div style={{ color: "#86efac", fontSize: 11, marginTop: 2 }}>{item[1]}</div>
+              </div>
+            );
+          })}
         </div>
 
-        <div className="lp3" style={{ marginTop:22 }}>
+        <div className="lp3" style={{ marginTop: 22 }}>
           <button className="hbtn pls" onClick={onStart}>Start the Quiz →</button>
-          <p style={{ color:"#d1fae5", fontSize:12, textAlign:"center", marginTop:7 }}>
+          <p style={{ color: "#d1fae5", fontSize: 12, textAlign: "center", marginTop: 7 }}>
             No sign-up. No long thing. Pure vibes only.
           </p>
         </div>
 
         {leaderboard.length > 0 && (
-          <div className="lp4 hcard" style={{ marginTop:26, padding:16 }}>
-            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
-              <span style={{ color:"#fff", fontWeight:700, fontSize:14 }}>🏆 Top Travellers</span>
-              <span className="htag" style={{ fontSize:10 }}>🌍 GLOBAL</span>
+          <div className="lp4 hcard" style={{ marginTop: 26, padding: 16 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <span style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>🏆 Top Travellers</span>
+              <span className="htag" style={{ fontSize: 10 }}>🌍 GLOBAL</span>
             </div>
-            {leaderboard.slice(0,5).map((e,i) => (
-              <div key={e.id} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"7px 0", borderBottom:i<4?"1px solid rgba(255,255,255,.05)":"none" }}>
-                <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                  <span style={{ fontSize:14, color:i===0?"#fbbf24":"#6b7280" }}>
-                    {i===0?"👑":i===1?"🥈":i===2?"🥉":"#"+(i+1)}
-                  </span>
-                  <span style={{ color:"#e5e7eb", fontSize:14, fontWeight:600 }}>{e.nickname}</span>
-                </div>
-                <div style={{ display:"flex", alignItems:"center", gap:6 }}>
-                  <span style={{ color:"#4ade80", fontWeight:700, fontSize:14 }}>{e.score}/37</span>
-                  <div style={{ width:34, height:4, background:"#1f2937", borderRadius:9 }}>
-                    <div style={{ width:((e.score/37)*100)+"%", height:"100%", background:"#16a34a", borderRadius:9 }}/>
+            {leaderboard.slice(0, 5).map(function(e, i) {
+              return (
+                <div key={e.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "7px 0", borderBottom: i < 4 ? "1px solid rgba(255,255,255,.05)" : "none" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ fontSize: 14, color: i === 0 ? "#fbbf24" : "#6b7280" }}>
+                      {i === 0 ? "👑" : i === 1 ? "🥈" : i === 2 ? "🥉" : "#" + (i + 1)}
+                    </span>
+                    <span style={{ color: "#e5e7eb", fontSize: 14, fontWeight: 600 }}>{e.nickname}</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <span style={{ color: "#4ade80", fontWeight: 700, fontSize: 14 }}>{e.score}/37</span>
+                    <div style={{ width: 34, height: 4, background: "#1f2937", borderRadius: 9 }}>
+                      <div style={{ width: ((e.score / 37) * 100) + "%", height: "100%", background: "#16a34a", borderRadius: 9 }} />
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 
-        <div className="lp4" style={{ marginTop:16 }}>
-          <p style={{ color:"#86efac", fontSize:12, textAlign:"center", marginBottom:8, fontWeight:600 }}>
+        <div className="lp4" style={{ marginTop: 16 }}>
+          <p style={{ color: "#86efac", fontSize: 12, textAlign: "center", marginBottom: 8, fontWeight: 600 }}>
             Spreading across Nigerian timelines right now 🔥
           </p>
-          {[["Chidimma_O","Inspector General of States",32],["Emeka_Benz","Inter State Operator",13],["Halima_K","Village Champion",4]].map(([n,t,s]) => (
-            <div key={n} className="hcard" style={{ padding:"10px 14px", marginBottom:7, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-              <div>
-                <div style={{ color:"#fff", fontWeight:600, fontSize:13 }}>{n}</div>
-                <div style={{ color:"#86efac", fontSize:11 }}>{t}</div>
+          {[["Chidimma_O","Inspector General of States",32],["Emeka_Benz","Inter State Operator",13],["Halima_K","Village Champion",4]].map(function(item) {
+            return (
+              <div key={item[0]} className="hcard" style={{ padding: "10px 14px", marginBottom: 7, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div>
+                  <div style={{ color: "#fff", fontWeight: 600, fontSize: 13 }}>{item[0]}</div>
+                  <div style={{ color: "#86efac", fontSize: 11 }}>{item[1]}</div>
+                </div>
+                <span style={{ color: "#4ade80", fontWeight: 800, fontSize: 20 }}>{item[2]}/37</span>
               </div>
-              <span style={{ color:"#4ade80", fontWeight:800, fontSize:20 }}>{s}/37</span>
-            </div>
-          ))}
+            );
+          })}
         </div>
-
       </div>
     </div>
   );
 }
 
 // ─── CHALLENGE ────────────────────────────────────────────────────────────────
-function ChallengeScreen({ data, onAccept }) {
+function ChallengeScreen(props) {
+  var data = props.data;
+  var onAccept = props.onAccept;
   return (
-    <div style={{ minHeight:"100vh", background:BG, fontFamily:FF, display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}>
-      <style>{GCSS}</style>
-      <div style={{ maxWidth:400, width:"100%", textAlign:"center" }}>
-        <div style={{ fontSize:56, marginBottom:10 }}>⚔️</div>
-        <h2 style={{ color:"#fff", fontSize:26, fontWeight:800 }}>You've Been Challenged!</h2>
-        <div className="hcard" style={{ padding:22, margin:"18px 0", border:"1px solid rgba(74,222,128,.22)" }}>
-          <p style={{ color:"#86efac", fontSize:14 }}>The gauntlet was thrown by</p>
-          <p style={{ color:"#fff", fontSize:28, fontWeight:800, margin:"8px 0" }}>{data?.nickname}</p>
-          <div style={{ background:"rgba(5,46,22,.6)", borderRadius:12, padding:"12px 20px", display:"inline-block" }}>
-            <span style={{ color:"#4ade80", fontSize:38, fontWeight:800 }}>{data?.score}</span>
-            <span style={{ color:"#6b7280", fontSize:20 }}>/37</span>
+    <div style={{ minHeight: "100vh", background: BG, fontFamily: FF, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+      <style dangerouslySetInnerHTML={{ __html: GCSS }} />
+      <div style={{ maxWidth: 400, width: "100%", textAlign: "center" }}>
+        <div style={{ fontSize: 56, marginBottom: 10 }}>⚔️</div>
+        <h2 style={{ color: "#fff", fontSize: 26, fontWeight: 800 }}>You've Been Challenged!</h2>
+        <div className="hcard" style={{ padding: 22, margin: "18px 0", border: "1px solid rgba(74,222,128,.22)" }}>
+          <p style={{ color: "#86efac", fontSize: 14 }}>The gauntlet was thrown by</p>
+          <p style={{ color: "#fff", fontSize: 28, fontWeight: 800, margin: "8px 0" }}>{data ? data.nickname : ""}</p>
+          <div style={{ background: "rgba(5,46,22,.6)", borderRadius: 12, padding: "12px 20px", display: "inline-block" }}>
+            <span style={{ color: "#4ade80", fontSize: 38, fontWeight: 800 }}>{data ? data.score : 0}</span>
+            <span style={{ color: "#6b7280", fontSize: 20 }}>/37</span>
           </div>
-          <p style={{ color:"#fbbf24", fontWeight:700, fontSize:14, marginTop:10 }}>"{data?.title}"</p>
+          <p style={{ color: "#fbbf24", fontWeight: 700, fontSize: 14, marginTop: 10 }}>"{data ? data.title : ""}"</p>
         </div>
-        <p style={{ color:"#86efac", marginBottom:18, fontSize:14 }}>Can you beat this? Show them what you're made of. 🇳🇬</p>
+        <p style={{ color: "#86efac", marginBottom: 18, fontSize: 14 }}>Can you beat this? Show them what you are made of. 🇳🇬</p>
         <button className="hbtn" onClick={onAccept}>Accept the Challenge →</button>
       </div>
     </div>
@@ -762,36 +757,39 @@ function ChallengeScreen({ data, onAccept }) {
 }
 
 // ─── NAME ─────────────────────────────────────────────────────────────────────
-function NameScreen({ value, onChange, onNext }) {
+function NameScreen(props) {
+  var value = props.value;
+  var onChange = props.onChange;
+  var onNext = props.onNext;
   return (
-    <div style={{ minHeight:"100vh", background:BG, fontFamily:FF, display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}>
-      <style>{GCSS}</style>
-      <div style={{ maxWidth:400, width:"100%", textAlign:"center" }}>
-        <div style={{ fontSize:50, marginBottom:12 }}>✍️</div>
-        <h2 style={{ color:"#fff", fontSize:26, fontWeight:800 }}>What do they call you?</h2>
-        <p style={{ color:"#86efac", marginTop:8, fontSize:14, lineHeight:1.5 }}>
-          Your name goes on the leaderboard.<br/>No surname, no drama.
+    <div style={{ minHeight: "100vh", background: BG, fontFamily: FF, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+      <style dangerouslySetInnerHTML={{ __html: GCSS }} />
+      <div style={{ maxWidth: 400, width: "100%", textAlign: "center" }}>
+        <div style={{ fontSize: 50, marginBottom: 12 }}>✍️</div>
+        <h2 style={{ color: "#fff", fontSize: 26, fontWeight: 800 }}>What do they call you?</h2>
+        <p style={{ color: "#86efac", marginTop: 8, fontSize: 14, lineHeight: 1.5 }}>
+          Your name goes on the leaderboard.<br />No surname, no drama.
         </p>
         <input
           type="text"
           value={value}
-          onChange={e => onChange(e.target.value)}
-          onKeyDown={e => e.key === "Enter" && onNext()}
+          onChange={function(e) { onChange(e.target.value); }}
+          onKeyDown={function(e) { if (e.key === "Enter") onNext(); }}
           placeholder="e.g. Tunde, Ngozi, Chioma..."
           maxLength={20}
           autoFocus
           style={{
-            width:"100%", marginTop:22, padding:"14px 18px",
-            background:"rgba(255,255,255,.07)",
-            border:"2px solid rgba(74,222,128,.3)",
-            borderRadius:14, color:"#fff", fontSize:18,
-            fontFamily:FF, outline:"none", textAlign:"center",
+            width: "100%", marginTop: 22, padding: "14px 18px",
+            background: "rgba(255,255,255,.07)",
+            border: "2px solid rgba(74,222,128,.3)",
+            borderRadius: 14, color: "#fff", fontSize: 18,
+            fontFamily: FF, outline: "none", textAlign: "center",
           }}
         />
-        <button className="hbtn" style={{ marginTop:14 }} onClick={onNext}>
+        <button className="hbtn" style={{ marginTop: 14 }} onClick={onNext}>
           Let's Go →
         </button>
-        <p style={{ color:"#6ee7b7", fontSize:11, marginTop:8 }}>
+        <p style={{ color: "#6ee7b7", fontSize: 11, marginTop: 8 }}>
           Leave blank to play as Anonymous
         </p>
       </div>
@@ -800,47 +798,25 @@ function NameScreen({ value, onChange, onNext }) {
 }
 
 // ─── GAME ─────────────────────────────────────────────────────────────────────
-function GameScreen({ stateName, currentIdx, total, animating, onAnswer, onBack }) {
-  const pct         = Math.round((currentIdx / total) * 100);
-  const displayName = stateName === "FCT Abuja" ? "FCT Abuja" : stateName+" State";
-  const factData    = STATE_FACTS[stateName] || { fact: "", icon: "📍" };
-  const canGoBack   = currentIdx > 0;
+function GameScreen(props) {
+  var stateName = props.stateName;
+  var currentIdx = props.currentIdx;
+  var total = props.total;
+  var animating = props.animating;
+  var onAnswer = props.onAnswer;
+  var onBack = props.onBack;
+
+  var pct = Math.round((currentIdx / total) * 100);
+  var displayName = stateName === "FCT Abuja" ? "FCT Abuja" : stateName + " State";
+  var factData = STATE_FACTS[stateName] || { fact: "", icon: "📍" };
+  var canGoBack = currentIdx > 0;
 
   return (
-    <div style={{ minHeight:"100vh", background:"linear-gradient(155deg,#020c04,#0b1a0c)", fontFamily:FF, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"20px 18px" }}>
-      <style>{GCSS + `
-        .yb {
-          background: rgba(22,163,74,.15); border: 2px solid #16a34a; color: #4ade80;
-          font-family: 'Sora','Segoe UI',sans-serif; font-size: 18px; font-weight: 700;
-          padding: 18px; border-radius: 16px; cursor: pointer; width: 100%;
-          transition: all .15s;
-        }
-        .yb:hover  { background: rgba(22,163,74,.3); }
-        .yb:active { transform: scale(.97); }
-        .nb {
-          background: rgba(220,38,38,.12); border: 2px solid #dc2626; color: #fca5a5;
-          font-family: 'Sora','Segoe UI',sans-serif; font-size: 18px; font-weight: 700;
-          padding: 18px; border-radius: 16px; cursor: pointer; width: 100%;
-          transition: all .15s;
-        }
-        .nb:hover  { background: rgba(220,38,38,.25); }
-        .nb:active { transform: scale(.97); }
-        .qcard { animation: hSlideIn .25s ease both; }
-        .back-btn {
-          background: none; border: 1px solid rgba(255,255,255,.2);
-          color: #86efac; font-family: 'Sora','Segoe UI',sans-serif;
-          font-size: 13px; font-weight: 600;
-          padding: 7px 14px; border-radius: 8px; cursor: pointer;
-          transition: all .15s; display: flex; align-items: center; gap: 5px;
-        }
-        .back-btn:hover { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.35); }
-        .back-btn:disabled { opacity: 0.25; pointer-events: none; }
-      `}</style>
+    <div style={{ minHeight: "100vh", background: "linear-gradient(155deg,#020c04,#0b1a0c)", fontFamily: FF, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "20px 18px" }}>
+      <style dangerouslySetInnerHTML={{ __html: GCSS }} />
+      <div style={{ maxWidth: 420, width: "100%" }}>
 
-      <div style={{ maxWidth:420, width:"100%" }}>
-
-        {/* Top bar: back button + progress */}
-        <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:20 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
           <button
             className="back-btn"
             onClick={onBack}
@@ -848,57 +824,45 @@ function GameScreen({ stateName, currentIdx, total, animating, onAnswer, onBack 
           >
             ← Back
           </button>
-          <div style={{ flex:1 }}>
-            <div style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}>
-              <span style={{ color:"#d1fae5", fontSize:13, fontWeight:600 }}>{currentIdx} / {total} answered</span>
-              <span style={{ color:"#4ade80", fontSize:13, fontWeight:700 }}>{pct}%</span>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+              <span style={{ color: "#d1fae5", fontSize: 13, fontWeight: 600 }}>{currentIdx} / {total} answered</span>
+              <span style={{ color: "#4ade80", fontSize: 13, fontWeight: 700 }}>{pct}%</span>
             </div>
-            <div style={{ height:7, background:"#1e293b", borderRadius:9 }}>
-              <div style={{
-                width:pct+"%", height:"100%",
-                background:"linear-gradient(90deg,#166534,#4ade80)",
-                borderRadius:9, transition:"width .3s ease",
-              }}/>
+            <div style={{ height: 7, background: "#1e293b", borderRadius: 9 }}>
+              <div style={{ width: pct + "%", height: "100%", background: "linear-gradient(90deg,#166534,#4ade80)", borderRadius: 9, transition: "width .3s ease" }} />
             </div>
           </div>
         </div>
 
-        {/* Question card */}
         <div
           className={animating ? "" : "qcard"}
           style={{
-            background:"rgba(255,255,255,.05)",
-            border:"1px solid rgba(255,255,255,.1)",
-            borderRadius:24, padding:"28px 22px",
-            textAlign:"center", marginBottom:14,
+            background: "rgba(255,255,255,.05)",
+            border: "1px solid rgba(255,255,255,.1)",
+            borderRadius: 24, padding: "28px 22px",
+            textAlign: "center", marginBottom: 14,
             opacity: animating ? 0 : 1,
-            transition:"opacity .2s",
+            transition: "opacity .2s",
           }}
         >
-          <p style={{ color:"#86efac", fontSize:12, fontWeight:700, letterSpacing:".1em", marginBottom:10 }}>
+          <p style={{ color: "#86efac", fontSize: 12, fontWeight: 700, letterSpacing: ".1em", marginBottom: 10 }}>
             HAVE YOU EVER VISITED
           </p>
-          <h2 style={{ color:"#ffffff", fontSize:30, fontWeight:800, lineHeight:1.1, marginBottom:6 }}>
+          <h2 style={{ color: "#ffffff", fontSize: 30, fontWeight: 800, lineHeight: 1.1, marginBottom: 6 }}>
             {displayName}?
           </h2>
-          <p style={{ color:"#6ee7b7", fontSize:12, marginBottom:20 }}>
+          <p style={{ color: "#6ee7b7", fontSize: 12, marginBottom: 20 }}>
             Physically. In person. For real. 👀
           </p>
-
-          {/* Fact card */}
-          <div style={{
-            background:"rgba(74,222,128,.08)",
-            border:"1px solid rgba(74,222,128,.2)",
-            borderRadius:14, padding:"14px 16px",
-            textAlign:"left",
-          }}>
-            <div style={{ display:"flex", alignItems:"flex-start", gap:10 }}>
-              <span style={{ fontSize:22, lineHeight:1, flexShrink:0, marginTop:2 }}>{factData.icon}</span>
+          <div style={{ background: "rgba(74,222,128,.08)", border: "1px solid rgba(74,222,128,.2)", borderRadius: 14, padding: "14px 16px", textAlign: "left" }}>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+              <span style={{ fontSize: 22, lineHeight: 1, flexShrink: 0, marginTop: 2 }}>{factData.icon}</span>
               <div>
-                <p style={{ color:"#fbbf24", fontSize:10, fontWeight:700, letterSpacing:".1em", marginBottom:5 }}>
+                <p style={{ color: "#fbbf24", fontSize: 10, fontWeight: 700, letterSpacing: ".1em", marginBottom: 5 }}>
                   DID YOU KNOW?
                 </p>
-                <p style={{ color:"#e2f5ea", fontSize:13, lineHeight:1.6, fontWeight:400 }}>
+                <p style={{ color: "#e2f5ea", fontSize: 13, lineHeight: 1.6, fontWeight: 400 }}>
                   {factData.fact}
                 </p>
               </div>
@@ -906,174 +870,11 @@ function GameScreen({ stateName, currentIdx, total, animating, onAnswer, onBack 
           </div>
         </div>
 
-        {/* Answer buttons */}
-        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
-          <button className="yb" onClick={() => onAnswer(true)}  disabled={animating}>✅ Yes</button>
-          <button className="nb" onClick={() => onAnswer(false)} disabled={animating}>❌ No</button>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <button className="yb" onClick={function() { onAnswer(true); }} disabled={animating}>✅ Yes</button>
+          <button className="nb" onClick={function() { onAnswer(false); }} disabled={animating}>❌ No</button>
         </div>
-        <p style={{ color:"#6ee7b7", fontSize:12, textAlign:"center", marginTop:12 }}>
-          No overthinking — gut feel only
-        </p>
-
-      </div>
-    </div>
-  );
-}ocial proof */}
-        <div className="lp4" style={{ marginTop:16 }}>
-          <p style={{ color:"#374151", fontSize:11, textAlign:"center", marginBottom:8 }}>
-            Spreading across Nigerian timelines right now 🔥
-          </p>
-          {[["Chidimma_O","Inspector General of States",32],["Emeka_Benz","Inter State Operator",13],["Halima_K","Village Champion",4]].map(([n,t,s]) => (
-            <div key={n} className="hcard" style={{ padding:"10px 14px", marginBottom:7, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-              <div>
-                <div style={{ color:"#fff", fontWeight:600, fontSize:13 }}>{n}</div>
-                <div style={{ color:"#6b7280", fontSize:11 }}>{t}</div>
-              </div>
-              <span style={{ color:"#4ade80", fontWeight:800, fontSize:20 }}>{s}/37</span>
-            </div>
-          ))}
-        </div>
-
-      </div>
-    </div>
-  );
-}
-
-// ─── CHALLENGE ────────────────────────────────────────────────────────────────
-function ChallengeScreen({ data, onAccept }) {
-  return (
-    <div style={{ minHeight:"100vh", background:BG, fontFamily:FF, display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}>
-      <style>{GCSS}</style>
-      <div style={{ maxWidth:400, width:"100%", textAlign:"center" }}>
-        <div style={{ fontSize:56, marginBottom:10 }}>⚔️</div>
-        <h2 style={{ color:"#fff", fontSize:26, fontWeight:800 }}>You've Been Challenged!</h2>
-        <div className="hcard" style={{ padding:22, margin:"18px 0", border:"1px solid rgba(74,222,128,.22)" }}>
-          <p style={{ color:"#86efac", fontSize:14 }}>The gauntlet was thrown by</p>
-          <p style={{ color:"#fff", fontSize:28, fontWeight:800, margin:"8px 0" }}>{data?.nickname}</p>
-          <div style={{ background:"rgba(5,46,22,.6)", borderRadius:12, padding:"12px 20px", display:"inline-block" }}>
-            <span style={{ color:"#4ade80", fontSize:38, fontWeight:800 }}>{data?.score}</span>
-            <span style={{ color:"#6b7280", fontSize:20 }}>/37</span>
-          </div>
-          <p style={{ color:"#fbbf24", fontWeight:700, fontSize:14, marginTop:10 }}>"{data?.title}"</p>
-        </div>
-        <p style={{ color:"#86efac", marginBottom:18, fontSize:14 }}>Can you beat this? Show them what you're made of. 🇳🇬</p>
-        <button className="hbtn" onClick={onAccept}>Accept the Challenge →</button>
-      </div>
-    </div>
-  );
-}
-
-// ─── NAME ─────────────────────────────────────────────────────────────────────
-function NameScreen({ value, onChange, onNext }) {
-  return (
-    <div style={{ minHeight:"100vh", background:BG, fontFamily:FF, display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}>
-      <style>{GCSS}</style>
-      <div style={{ maxWidth:400, width:"100%", textAlign:"center" }}>
-        <div style={{ fontSize:50, marginBottom:12 }}>✍️</div>
-        <h2 style={{ color:"#fff", fontSize:26, fontWeight:800 }}>What do they call you?</h2>
-        <p style={{ color:"#86efac", marginTop:8, fontSize:14, lineHeight:1.5 }}>
-          Your name goes on the leaderboard.<br/>No surname, no drama.
-        </p>
-        <input
-          type="text"
-          value={value}
-          onChange={e => onChange(e.target.value)}
-          onKeyDown={e => e.key === "Enter" && onNext()}
-          placeholder="e.g. Tunde, Ngozi, Chioma..."
-          maxLength={20}
-          autoFocus
-          style={{
-            width:"100%", marginTop:22, padding:"14px 18px",
-            background:"rgba(255,255,255,.07)",
-            border:"2px solid rgba(74,222,128,.3)",
-            borderRadius:14, color:"#fff", fontSize:18,
-            fontFamily:FF, outline:"none", textAlign:"center",
-          }}
-        />
-        <button className="hbtn" style={{ marginTop:14 }} onClick={onNext}>
-          Let's Go →
-        </button>
-        <p style={{ color:"#374151", fontSize:11, marginTop:8 }}>
-          Leave blank to play as Anonymous
-        </p>
-      </div>
-    </div>
-  );
-}
-
-// ─── GAME ─────────────────────────────────────────────────────────────────────
-function GameScreen({ stateName, currentIdx, total, animating, onAnswer }) {
-  const pct         = Math.round((currentIdx / total) * 100);
-  const displayName = stateName === "FCT Abuja" ? "FCT Abuja" : stateName+" State";
-
-  return (
-    <div style={{ minHeight:"100vh", background:"linear-gradient(155deg,#01080300,#0b1a0c)", fontFamily:FF, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"20px 18px" }}>
-      <style>{GCSS + `
-        .yb {
-          background: rgba(22,163,74,.13); border: 2px solid #16a34a; color: #4ade80;
-          font-family: ${FF}; font-size: 18px; font-weight: 700;
-          padding: 18px; border-radius: 16px; cursor: pointer; width: 100%;
-          transition: all .15s;
-        }
-        .yb:hover  { background: rgba(22,163,74,.28); }
-        .yb:active { transform: scale(.97); }
-        .nb {
-          background: rgba(220,38,38,.1); border: 2px solid #dc2626; color: #fca5a5;
-          font-family: ${FF}; font-size: 18px; font-weight: 700;
-          padding: 18px; border-radius: 16px; cursor: pointer; width: 100%;
-          transition: all .15s;
-        }
-        .nb:hover  { background: rgba(220,38,38,.22); }
-        .nb:active { transform: scale(.97); }
-        .qcard { animation: hSlideIn .25s ease both; }
-      `}</style>
-
-      <div style={{ maxWidth:420, width:"100%" }}>
-        {/* Progress */}
-        <div style={{ marginBottom:28 }}>
-          <div style={{ display:"flex", justifyContent:"space-between", marginBottom:7 }}>
-            <span style={{ color:"#6b7280", fontSize:13 }}>{currentIdx} / {total} answered</span>
-            <span style={{ color:"#4ade80", fontSize:13, fontWeight:700 }}>{pct}%</span>
-          </div>
-          <div style={{ height:7, background:"#1e293b", borderRadius:9 }}>
-            <div style={{
-              width:pct+"%", height:"100%",
-              background:"linear-gradient(90deg,#166534,#4ade80)",
-              borderRadius:9, transition:"width .3s ease",
-            }}/>
-          </div>
-        </div>
-
-        {/* Question */}
-        <div
-          className={animating ? "" : "qcard"}
-          style={{
-            background:"rgba(255,255,255,.04)",
-            border:"1px solid rgba(255,255,255,.07)",
-            borderRadius:24, padding:"34px 24px",
-            textAlign:"center", marginBottom:20,
-            opacity: animating ? 0 : 1,
-            transition:"opacity .2s",
-          }}
-        >
-          <div style={{ fontSize:44, marginBottom:12 }}>📍</div>
-          <p style={{ color:"#6b7280", fontSize:13, fontWeight:600, letterSpacing:".08em", marginBottom:8 }}>
-            HAVE YOU EVER VISITED
-          </p>
-          <h2 style={{ color:"#fff", fontSize:28, fontWeight:800, lineHeight:1.15 }}>
-            {displayName}?
-          </h2>
-          <p style={{ color:"#374151", fontSize:12, marginTop:10 }}>
-            Physically. In person. For real. 👀
-          </p>
-        </div>
-
-        {/* Answers */}
-        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
-          <button className="yb" onClick={() => onAnswer(true)}  disabled={animating}>✅ Yes</button>
-          <button className="nb" onClick={() => onAnswer(false)} disabled={animating}>❌ No</button>
-        </div>
-        <p style={{ color:"#1c2b1c", fontSize:12, textAlign:"center", marginTop:14 }}>
+        <p style={{ color: "#6ee7b7", fontSize: 12, textAlign: "center", marginTop: 12 }}>
           No overthinking — gut feel only
         </p>
       </div>
@@ -1082,163 +883,119 @@ function GameScreen({ stateName, currentIdx, total, animating, onAnswer }) {
 }
 
 // ─── RESULT ───────────────────────────────────────────────────────────────────
-function ResultScreen({ data, onPlayAgain, onLeaderboard, onShare }) {
-  const {
-    nickname, score, pct, visited,
-    zoneStats, zonesCompleted, notVisited,
-    title, emoji, summary,
-  } = data;
+function ResultScreen(props) {
+  var data = props.data;
+  var onPlayAgain = props.onPlayAgain;
+  var onLeaderboard = props.onLeaderboard;
+  var onShare = props.onShare;
 
-  // Detect native share safely (in-app browsers may throw)
-  const [canNative, setCanNative] = useState(false);
-  useEffect(() => {
-    try { setCanNative(typeof navigator !== "undefined" && !!navigator.share); } catch {}
+  var nickname = data.nickname;
+  var score = data.score;
+  var pct = data.pct;
+  var visited = data.visited;
+  var zoneStats = data.zoneStats;
+  var zonesCompleted = data.zonesCompleted;
+  var notVisited = data.notVisited;
+  var title = data.title;
+  var emoji = data.emoji;
+  var summary = data.summary;
+
+  var [canNative, setCanNative] = useState(false);
+  useEffect(function() {
+    try { setCanNative(typeof navigator !== "undefined" && !!navigator.share); } catch (e) {}
   }, []);
 
   return (
-    <div style={{ minHeight:"100vh", background:BG, fontFamily:FF, paddingBottom:56 }}>
-      <style>{GCSS + `
-        .rh { animation: hReveal  .5s ease both; }
-        .rs { animation: hFadeUp  .5s .12s ease both; }
-      `}</style>
-      <div style={{ maxWidth:430, margin:"0 auto", padding:"0 16px" }}>
+    <div style={{ minHeight: "100vh", background: BG, fontFamily: FF, paddingBottom: 56 }}>
+      <style dangerouslySetInnerHTML={{ __html: GCSS }} />
+      <div style={{ maxWidth: 430, margin: "0 auto", padding: "0 16px" }}>
 
-        {/* ── Score hero ── */}
-        <div className="rh" style={{ textAlign:"center", paddingTop:44, paddingBottom:20 }}>
+        <div className="rh" style={{ textAlign: "center", paddingTop: 44, paddingBottom: 20 }}>
           <span className="htag">🇳🇬 Your Result</span>
-          <div style={{ marginTop:18, marginBottom:2 }}>
-            <span style={{ color:"#4ade80", fontSize:82, fontWeight:800, lineHeight:1 }}>{score}</span>
-            <span style={{ color:"#4b5563", fontSize:34, fontWeight:700 }}>/37</span>
+          <div style={{ marginTop: 18, marginBottom: 2 }}>
+            <span style={{ color: "#4ade80", fontSize: 82, fontWeight: 800, lineHeight: 1 }}>{score}</span>
+            <span style={{ color: "#4b5563", fontSize: 34, fontWeight: 700 }}>/37</span>
           </div>
-          <div style={{ fontSize:34, margin:"4px 0 6px" }}>{emoji}</div>
-          <h2 style={{ color:"#fff", fontSize:22, fontWeight:800 }}>{title}</h2>
-          <p style={{ color:"#86efac", marginTop:9, fontSize:14, lineHeight:1.65, padding:"0 8px" }}>
-            {summary}
-          </p>
-          <div style={{
-            display:"inline-block", marginTop:14,
-            background:"rgba(22,163,74,.14)",
-            border:"1px solid rgba(74,222,128,.28)",
-            borderRadius:999, padding:"5px 16px",
-            color:"#4ade80", fontSize:14, fontWeight:700,
-          }}>
+          <div style={{ fontSize: 34, margin: "4px 0 6px" }}>{emoji}</div>
+          <h2 style={{ color: "#fff", fontSize: 22, fontWeight: 800 }}>{title}</h2>
+          <p style={{ color: "#86efac", marginTop: 9, fontSize: 14, lineHeight: 1.65, padding: "0 8px" }}>{summary}</p>
+          <div style={{ display: "inline-block", marginTop: 14, background: "rgba(22,163,74,.14)", border: "1px solid rgba(74,222,128,.28)", borderRadius: 999, padding: "5px 16px", color: "#4ade80", fontSize: 14, fontWeight: 700 }}>
             {pct}% of Nigeria explored
           </div>
         </div>
 
-        {/* ── Grid Map ── */}
-        <div className="rs hcard" style={{ padding:"14px 12px", marginBottom:14 }}>
-          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
-            <span style={{ color:"#fff", fontWeight:700, fontSize:14 }}>Your Nigeria Map</span>
-            <span style={{ color:"#4ade80", fontSize:12 }}>{zonesCompleted}/6 zones complete</span>
+        <div className="rs hcard" style={{ padding: "14px 12px", marginBottom: 14 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+            <span style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>Your Nigeria Map</span>
+            <span style={{ color: "#4ade80", fontSize: 12 }}>{zonesCompleted}/6 zones complete</span>
           </div>
           <NigeriaGridMap visited={visited} />
         </div>
 
-        {/* ── Zone breakdown ── */}
-        <div className="rs hcard" style={{ padding:16, marginBottom:14 }}>
-          <p style={{ color:"#fff", fontWeight:700, fontSize:14, marginBottom:12 }}>
-            Geo-political Zone Breakdown
-          </p>
-          {zoneStats.map(z => {
-            const col = ZONE_COLOR[z.zone];
+        <div className="rs hcard" style={{ padding: 16, marginBottom: 14 }}>
+          <p style={{ color: "#fff", fontWeight: 700, fontSize: 14, marginBottom: 12 }}>Geo-political Zone Breakdown</p>
+          {zoneStats.map(function(z) {
+            var col = ZONE_COLOR[z.zone];
             return (
-              <div key={z.zone} style={{ marginBottom:11 }}>
-                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:4 }}>
-                  <div style={{ display:"flex", alignItems:"center", gap:6 }}>
-                    <div style={{ width:10, height:10, borderRadius:2, background:col.visited, flexShrink:0 }}/>
-                    <span style={{ color:"#d1d5db", fontSize:13 }}>
-                      {z.zone}
-                      {z.visited === z.total && " ✅"}
+              <div key={z.zone} style={{ marginBottom: 11 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <div style={{ width: 10, height: 10, borderRadius: 2, background: col.visited, flexShrink: 0 }} />
+                    <span style={{ color: "#d1d5db", fontSize: 13 }}>
+                      {z.zone}{z.visited === z.total ? " ✅" : ""}
                     </span>
                   </div>
-                  <span style={{ color:"#4ade80", fontSize:13, fontWeight:700 }}>
-                    {z.visited}/{z.total}
-                  </span>
+                  <span style={{ color: "#4ade80", fontSize: 13, fontWeight: 700 }}>{z.visited}/{z.total}</span>
                 </div>
-                <div style={{ height:5, background:"#1e293b", borderRadius:9 }}>
-                  <div style={{
-                    width:((z.visited/z.total)*100)+"%", height:"100%",
-                    background:z.visited===z.total ? col.visited : "#334155",
-                    borderRadius:9, transition:"width .8s ease",
-                  }}/>
+                <div style={{ height: 5, background: "#1e293b", borderRadius: 9 }}>
+                  <div style={{ width: ((z.visited / z.total) * 100) + "%", height: "100%", background: z.visited === z.total ? col.visited : "#334155", borderRadius: 9, transition: "width .8s ease" }} />
                 </div>
               </div>
             );
           })}
         </div>
 
-        {/* ── Bucket list ── */}
         {notVisited.length > 0 && (
-          <div className="rs hcard" style={{ padding:16, marginBottom:14 }}>
-            <p style={{ color:"#fff", fontWeight:700, fontSize:14, marginBottom:8 }}>
-              States on Your Bucket List ({notVisited.length})
+          <div className="rs hcard" style={{ padding: 16, marginBottom: 14 }}>
+            <p style={{ color: "#fff", fontWeight: 700, fontSize: 14, marginBottom: 8 }}>
+              {"States on Your Bucket List (" + notVisited.length + ")"}
             </p>
-            <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
-              {notVisited.map(s => (
-                <span key={s} style={{
-                  background:"rgba(239,68,68,.08)",
-                  border:"1px solid rgba(239,68,68,.2)",
-                  color:"#fca5a5", padding:"3px 9px",
-                  borderRadius:999, fontSize:11,
-                }}>
-                  {s}
-                </span>
-              ))}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {notVisited.map(function(s) {
+                return (
+                  <span key={s} style={{ background: "rgba(239,68,68,.08)", border: "1px solid rgba(239,68,68,.2)", color: "#fca5a5", padding: "3px 9px", borderRadius: 999, fontSize: 11 }}>
+                    {s}
+                  </span>
+                );
+              })}
             </div>
           </div>
         )}
 
-        {/* ── Share ── */}
-        <div className="rs hcard" style={{ padding:16, marginBottom:14, border:"1px solid rgba(74,222,128,.16)" }}>
-          <p style={{ color:"#fff", fontWeight:700, fontSize:14, marginBottom:3 }}>
-            Share Your Score 📢
-          </p>
-          <p style={{ color:"#6b7280", fontSize:12, marginBottom:12 }}>
-            Challenge your friends. Embarrass your colleagues.
-          </p>
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, marginBottom:8 }}>
-            <button className="sbtn" onClick={() => onShare("twitter")}>𝕏 Twitter/X</button>
-            <button className="sbtn" onClick={() => onShare("whatsapp")}>💬 WhatsApp</button>
-            <button className="sbtn" onClick={() => onShare("telegram")}>✈️ Telegram</button>
-            <button className="sbtn" onClick={() => onShare("facebook")}>📘 Facebook</button>
+        <div className="rs hcard" style={{ padding: 16, marginBottom: 14, border: "1px solid rgba(74,222,128,.16)" }}>
+          <p style={{ color: "#fff", fontWeight: 700, fontSize: 14, marginBottom: 3 }}>Share Your Score 📢</p>
+          <p style={{ color: "#6b7280", fontSize: 12, marginBottom: 12 }}>Challenge your friends. Embarrass your colleagues.</p>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 8 }}>
+            <button className="sbtn" onClick={function() { onShare("twitter"); }}>𝕏 Twitter/X</button>
+            <button className="sbtn" onClick={function() { onShare("whatsapp"); }}>💬 WhatsApp</button>
+            <button className="sbtn" onClick={function() { onShare("telegram"); }}>✈️ Telegram</button>
+            <button className="sbtn" onClick={function() { onShare("facebook"); }}>📘 Facebook</button>
           </div>
-          <button
-            className="sbtn"
-            style={{ width:"100%", background:"rgba(22,163,74,.12)", borderColor:"rgba(74,222,128,.32)", color:"#4ade80" }}
-            onClick={() => onShare("copy")}
-          >
+          <button className="sbtn" style={{ width: "100%", background: "rgba(22,163,74,.12)", borderColor: "rgba(74,222,128,.32)", color: "#4ade80" }} onClick={function() { onShare("copy"); }}>
             🔗 Copy Challenge Link
           </button>
           {canNative && (
-            <button className="sbtn" style={{ width:"100%", marginTop:8 }} onClick={() => onShare("native")}>
+            <button className="sbtn" style={{ width: "100%", marginTop: 8 }} onClick={function() { onShare("native"); }}>
               ↗️ Share via Phone
             </button>
           )}
         </div>
 
-        {/* ── Actions ── */}
-        <div className="rs" style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
-          <button
-            onClick={onPlayAgain}
-            style={{
-              background:"rgba(255,255,255,.06)",
-              border:"1px solid rgba(255,255,255,.13)",
-              color:"#fff", fontFamily:FF, fontWeight:700,
-              fontSize:14, padding:14, borderRadius:14, cursor:"pointer",
-            }}
-          >
+        <div className="rs" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <button onClick={onPlayAgain} style={{ background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.13)", color: "#fff", fontFamily: FF, fontWeight: 700, fontSize: 14, padding: 14, borderRadius: 14, cursor: "pointer" }}>
             🔄 Play Again
           </button>
-          <button
-            onClick={onLeaderboard}
-            style={{
-              background:"linear-gradient(135deg,#16a34a,#15803d)",
-              border:"none", color:"#fff", fontFamily:FF,
-              fontWeight:700, fontSize:14, padding:14,
-              borderRadius:14, cursor:"pointer",
-            }}
-          >
+          <button onClick={onLeaderboard} style={{ background: "linear-gradient(135deg,#16a34a,#15803d)", border: "none", color: "#fff", fontFamily: FF, fontWeight: 700, fontSize: 14, padding: 14, borderRadius: 14, cursor: "pointer" }}>
             🏆 Leaderboard
           </button>
         </div>
@@ -1249,71 +1006,59 @@ function ResultScreen({ data, onPlayAgain, onLeaderboard, onShare }) {
 }
 
 // ─── LEADERBOARD ──────────────────────────────────────────────────────────────
-function LeaderboardScreen({ leaderboard, myNickname, onBack }) {
+function LeaderboardScreen(props) {
+  var leaderboard = props.leaderboard;
+  var myNickname = props.myNickname;
+  var onBack = props.onBack;
   return (
-    <div style={{ minHeight:"100vh", background:BG, fontFamily:FF, paddingBottom:52 }}>
-      <style>{GCSS}</style>
-      <div style={{ maxWidth:430, margin:"0 auto", padding:"0 16px" }}>
-
-        <div style={{ paddingTop:40, paddingBottom:20 }}>
-          <button
-            onClick={onBack}
-            style={{ background:"none", border:"none", color:"#4ade80", fontFamily:FF, fontSize:14, cursor:"pointer", marginBottom:14 }}
-          >
+    <div style={{ minHeight: "100vh", background: BG, fontFamily: FF, paddingBottom: 52 }}>
+      <style dangerouslySetInnerHTML={{ __html: GCSS }} />
+      <div style={{ maxWidth: 430, margin: "0 auto", padding: "0 16px" }}>
+        <div style={{ paddingTop: 40, paddingBottom: 20 }}>
+          <button onClick={onBack} style={{ background: "none", border: "none", color: "#4ade80", fontFamily: FF, fontSize: 14, cursor: "pointer", marginBottom: 14 }}>
             ← Back
           </button>
-          <h2 style={{ color:"#fff", fontSize:26, fontWeight:800 }}>🏆 Leaderboard</h2>
-          <p style={{ color:"#6b7280", fontSize:13, marginTop:4 }}>
-            Top travellers on this device
-          </p>
+          <h2 style={{ color: "#fff", fontSize: 26, fontWeight: 800 }}>🏆 Leaderboard</h2>
+          <p style={{ color: "#86efac", fontSize: 13, marginTop: 4 }}>Global — powered by Supabase</p>
         </div>
 
         {leaderboard.length === 0 ? (
-          <div style={{ textAlign:"center", color:"#4b5563", paddingTop:60 }}>
-            <div style={{ fontSize:48 }}>🇳🇬</div>
-            <p style={{ marginTop:14, fontSize:15 }}>No scores yet — be the first!</p>
+          <div style={{ textAlign: "center", color: "#4b5563", paddingTop: 60 }}>
+            <div style={{ fontSize: 48 }}>🇳🇬</div>
+            <p style={{ marginTop: 14, fontSize: 15 }}>No scores yet — be the first!</p>
           </div>
-        ) : (
-          leaderboard.map((e, i) => {
-            const isMe  = e.nickname === myNickname;
-            const medal = i===0?"👑": i===1?"🥈": i===2?"🥉": "#"+(i+1);
-            return (
-              <div
-                key={e.id}
-                style={{
-                  background: isMe ? "rgba(22,163,74,.11)" : "rgba(255,255,255,.04)",
-                  border: "1px solid "+(isMe ? "rgba(74,222,128,.35)" : "rgba(255,255,255,.07)"),
-                  borderRadius:14, padding:"12px 16px", marginBottom:8,
-                  display:"flex", alignItems:"center", gap:12,
-                }}
-              >
-                <span style={{ fontSize:i<3?20:13, color:i===0?"#fbbf24":"#6b7280", minWidth:28 }}>
-                  {medal}
-                </span>
-                <div style={{ flex:1 }}>
-                  <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:4 }}>
-                    <span style={{ color:"#fff", fontWeight:700, fontSize:15 }}>{e.nickname}</span>
-                    {isMe && (
-                      <span className="htag" style={{ fontSize:9, padding:"1px 7px" }}>YOU</span>
-                    )}
-                  </div>
-                  <div style={{ height:4, background:"#1e293b", borderRadius:9 }}>
-                    <div style={{ width:((e.score/37)*100)+"%", height:"100%", background:"#16a34a", borderRadius:9 }}/>
-                  </div>
+        ) : leaderboard.map(function(e, i) {
+          var isMe = e.nickname === myNickname;
+          var medal = i === 0 ? "👑" : i === 1 ? "🥈" : i === 2 ? "🥉" : "#" + (i + 1);
+          return (
+            <div
+              key={e.id}
+              style={{
+                background: isMe ? "rgba(22,163,74,.11)" : "rgba(255,255,255,.04)",
+                border: "1px solid " + (isMe ? "rgba(74,222,128,.35)" : "rgba(255,255,255,.07)"),
+                borderRadius: 14, padding: "12px 16px", marginBottom: 8,
+                display: "flex", alignItems: "center", gap: 12,
+              }}
+            >
+              <span style={{ fontSize: i < 3 ? 20 : 13, color: i === 0 ? "#fbbf24" : "#6b7280", minWidth: 28 }}>
+                {medal}
+              </span>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                  <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>{e.nickname}</span>
+                  {isMe && <span className="htag" style={{ fontSize: 9, padding: "1px 7px" }}>YOU</span>}
                 </div>
-                <div style={{ textAlign:"right" }}>
-                  <div style={{ color:"#4ade80", fontWeight:800, fontSize:18 }}>{e.score}</div>
-                  <div style={{ color:"#6b7280", fontSize:11 }}>/37</div>
+                <div style={{ height: 4, background: "#1e293b", borderRadius: 9 }}>
+                  <div style={{ width: ((e.score / 37) * 100) + "%", height: "100%", background: "#16a34a", borderRadius: 9 }} />
                 </div>
               </div>
-            );
-          })
-        )}
-
-        <p style={{ color:"#374151", fontSize:11, textAlign:"center", marginTop:20, lineHeight:1.5 }}>
-          Leaderboard is stored on this device.<br/>
-          Connect a database to make it global.
-        </p>
+              <div style={{ textAlign: "right" }}>
+                <div style={{ color: "#4ade80", fontWeight: 800, fontSize: 18 }}>{e.score}</div>
+                <div style={{ color: "#6b7280", fontSize: 11 }}>/37</div>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
